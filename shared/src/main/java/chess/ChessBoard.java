@@ -15,7 +15,7 @@ public class ChessBoard {
     private ChessPiece[][] board;
 
     public ChessBoard() {
-        ChessPiece[][] board = new ChessPiece[8][8];
+         board = new ChessPiece[8][8];
 
     }
 
@@ -32,7 +32,13 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         int col = position.getColumn();
         int row = position.getRow();
-        board[row][col] = piece;
+        if (row < 8 && col < 8 && row >= 0 && col >= 0) {
+            board[row][col] = piece;
+        }
+        else{
+            throw new IllegalArgumentException("Invalid position");
+        }
+
     }
 
     /**

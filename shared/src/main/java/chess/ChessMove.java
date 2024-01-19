@@ -31,6 +31,29 @@ public class ChessMove {
         return finalPosition;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ChessMove){
+            ChessMove other = (ChessMove) obj;
+            return other.finalPosition.equals(this.finalPosition) && other.startPosition.equals(this.startPosition);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "ChessMove{" +
+                "startPosition" + startPosition +
+                ", finalPosition=" + finalPosition +
+                ", promotionPiece=" + promotionPiece +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return startPosition.hashCode() + finalPosition.hashCode();
+    }
+
     /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
      * chess move
