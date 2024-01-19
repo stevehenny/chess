@@ -59,6 +59,34 @@ public class ChessPiece {
     }
 
     /**
+     * @return valid moves for this piece from the given position
+     */
+    private ChessPosition[] getValidMoves(ChessBoard board,ChessPosition[] positions) {
+        for (int i = 0; i < positions.length; i++) {
+            if (positions[i].getRow() < 1 || positions[i].getRow() > 8 || positions[i].getColumn() < 1 || positions[i].getColumn() > 8) {
+                positions[i] = null;
+                continue;
+            } else if (board.getPiece(positions[i]) != null && board.getPiece(positions[i]).getTeamColor() == this.pieceColor) {
+                positions[i] = null;
+                for(int j = i; j< positions.length; j++){
+                    positions[j] = null;
+                }
+                break;
+
+            } else if (board.getPiece(positions[i]) != null && board.getPiece(positions[i]).getTeamColor() != this.pieceColor) {
+
+                for (int j = i + 1; j < positions.length; j++) {
+                    positions[j] = null;
+                }
+                break;
+            }
+
+        }
+        return positions;
+    }
+
+
+    /**
      * Calculates all the positions a king can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
@@ -80,7 +108,7 @@ public class ChessPiece {
         positions[6] = new ChessPosition(row, col - 1);
         positions[7] = new ChessPosition(row + 1, col - 1);
         for (int i = 0; i < 8; i++){
-            if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8){
+            if (positions[i].getRow() < 1 || positions[i].getRow() > 8 || positions[i].getColumn() < 1 || positions[i].getColumn() > 8){
                 positions[i] = null;
                 continue;
             }
@@ -105,24 +133,116 @@ public class ChessPiece {
     public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        ChessPosition[] positions = new ChessPosition[32];
+        ChessPosition[] positions = new ChessPosition[8];
         Collection<ChessMove> moves = new HashSet<>();
-        for (int i = 0; i < 8; i++){
-            positions[i] = new ChessPosition(row + i, col);
-            positions[i + 8] = new ChessPosition(row - i, col);
-            positions[i + 16] = new ChessPosition(row, col + i);
-            positions[i + 24] = new ChessPosition(row, col - i);
-        }
 
-        for (int i = 0; i < 27; i++){
-            if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8){
-                positions[i] = null;
+        // check down lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row + i + 1, col);
+        }
+        // check down positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
                 continue;
             }
-            else{
-                moves.add(new ChessMove(myPosition, positions[i], null));
-            }
+            moves.add(new ChessMove(myPosition, position, null));
         }
+
+        // check up lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row - i - 1, col);
+        }
+        // check up positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
+                continue;
+            }
+            moves.add(new ChessMove(myPosition, position, null));
+        }
+
+        //check right lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row, col + i + 1);
+        }
+        // check right positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
+                continue;
+            }
+            moves.add(new ChessMove(myPosition, position, null));
+        }
+
+        // check left lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row, col - i - 1);
+        }
+        // check left positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
+                continue;
+            }
+            moves.add(new ChessMove(myPosition, position, null));
+        }
+
+        // check down right lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row + i + 1, col + i + 1);
+        }
+        // check down right positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
+                continue;
+            }
+            moves.add(new ChessMove(myPosition, position, null));
+        }
+
+        // check down left lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row - i - 1, col + i + 1);
+        }
+        // check down left positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
+                continue;
+            }
+            moves.add(new ChessMove(myPosition, position, null));
+        }
+
+        // check up right lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row + i + 1, col - i - 1);
+        }
+        // check up right positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
+                continue;
+            }
+            moves.add(new ChessMove(myPosition, position, null));
+        }
+
+        // check up left lane
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row - i - 1, col - i - 1);
+        }
+        // check up left positions
+        positions = getValidMoves(board, positions);
+        for (ChessPosition position : positions) {
+            if (position == null) {
+                continue;
+            }
+            moves.add(new ChessMove(myPosition, position, null));
+        }
+
+
+
+
         return moves;
         }
 
@@ -136,28 +256,67 @@ public class ChessPiece {
      public Collection<ChessMove>  bishopMoves(ChessBoard board, ChessPosition myPosition) {
          int row = myPosition.getRow();
          int col = myPosition.getColumn();
-         ChessPosition[] positions = new ChessPosition[32];
+         ChessPosition[] positions = new ChessPosition[8];
          Collection<ChessMove> moves = new HashSet<>();
-         for (int i = 0; i < 8; i++) {
-             positions[i] = new ChessPosition(row + i, col + i);
-             positions[i + 8] = new ChessPosition(row - i, col - i);
-             positions[i + 16] = new ChessPosition(row + i, col - i);
-             positions[i + 24] = new ChessPosition(row - i, col + i);
+
+         // check down right lane
+         for (int i = 0; i < 8; i++){
+             positions[i] = new ChessPosition(row + i + 1, col + i + 1);
+         }
+         // check down right positions
+         positions = getValidMoves(board, positions);
+         for (ChessPosition position : positions) {
+             if (position == null) {
+                 continue;
+             }
+             moves.add(new ChessMove(myPosition, position, null));
          }
 
-         for (int i = 0; i < 32; i++) {
-             if (positions[i] == null) {
-                 continue;
-             }
-             // Check if the position is out of bounds
-             if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8) {
-                 positions[i] = null;
-                 continue;
-             } else {
-                 moves.add(new ChessMove(myPosition, positions[i], null));
-             }
+         // check down left lane
+         for (int i = 0; i < 8; i++){
+             positions[i] = new ChessPosition(row - i - 1, col + i + 1);
          }
+         // check down left positions
+         positions = getValidMoves(board, positions);
+         for (ChessPosition position : positions) {
+             if (position == null) {
+                 continue;
+             }
+             moves.add(new ChessMove(myPosition, position, null));
+         }
+
+         // check up right lane
+         for (int i = 0; i < 8; i++){
+             positions[i] = new ChessPosition(row + i + 1, col - i - 1);
+         }
+         // check up right positions
+         positions = getValidMoves(board, positions);
+         for (ChessPosition position : positions) {
+             if (position == null) {
+                 continue;
+             }
+             moves.add(new ChessMove(myPosition, position, null));
+         }
+
+         // check up left lane
+         for (int i = 0; i < 8; i++){
+             positions[i] = new ChessPosition(row - i - 1, col - i - 1);
+         }
+         // check up left positions
+         positions = getValidMoves(board, positions);
+         for (ChessPosition position : positions) {
+             if (position == null) {
+                 continue;
+             }
+             moves.add(new ChessMove(myPosition, position, null));
+         }
+
+
+
+
          return moves;
+
+
      }
 
     /**
@@ -181,9 +340,19 @@ public class ChessPiece {
             positions[5] = new ChessPosition(row + 1, col - 2);
             positions[6] = new ChessPosition(row - 1, col + 2);
             positions[7] = new ChessPosition(row - 1, col - 2);
+            row -= 1;
+            col -= 1;
             for (int i = 0; i < 8; i++){
-                if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8){
+                if (positions[i].getRow() < 1 || positions[i].getRow() > 8 || positions[i].getColumn() < 1 || positions[i].getColumn() > 8){
                     positions[i] = null;
+                    continue;
+                }
+                else if (board.getPiece(positions[i]) != null && board.getPiece(positions[i]).getTeamColor() == this.pieceColor){
+                    positions[i] = null;
+                    continue;
+                }
+                else if (board.getPiece(positions[i]) != null && board.getPiece(positions[i]).getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, positions[i], null));
                     continue;
                 }
                 else{

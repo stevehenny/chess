@@ -49,7 +49,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        int row = position.getRow() -1;
+        int row = position.getRow() - 1;
         int col = position.getColumn() - 1;
         return board[row][col];
     }
@@ -82,7 +82,7 @@ public class ChessBoard {
      */
 
     public void resetBoard() {
-        ChessPiece[][] board = new ChessPiece[8][8];
+        board = new ChessPiece[8][8];
 
         board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         board[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
