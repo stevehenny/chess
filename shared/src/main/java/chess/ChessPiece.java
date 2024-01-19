@@ -80,11 +80,15 @@ public class ChessPiece {
         positions[6] = new ChessPosition(row, col - 1);
         positions[7] = new ChessPosition(row + 1, col - 1);
         for (int i = 0; i < 8; i++){
-            if (positions[i].getRow() < 0 || positions[i].getRow() > 7 || positions[i].getColumn() < 0 || positions[i].getColumn() > 7){
+            if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8){
                 positions[i] = null;
                 continue;
             }
-            else{
+            else if(board.getPiece(positions[i]) != null && board.getPiece(positions[i]).getTeamColor() == this.pieceColor){
+                positions[i] = null;
+                continue;
+            }
+            else {
                 moves.add(new ChessMove(myPosition, positions[i], null));
             }
         }
@@ -101,7 +105,7 @@ public class ChessPiece {
     public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        ChessPosition[] positions = new ChessPosition[27];
+        ChessPosition[] positions = new ChessPosition[32];
         Collection<ChessMove> moves = new HashSet<>();
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row + i, col);
@@ -132,7 +136,7 @@ public class ChessPiece {
      public Collection<ChessMove>  bishopMoves(ChessBoard board, ChessPosition myPosition) {
          int row = myPosition.getRow();
          int col = myPosition.getColumn();
-         ChessPosition[] positions = new ChessPosition[27];
+         ChessPosition[] positions = new ChessPosition[32];
          Collection<ChessMove> moves = new HashSet<>();
          for (int i = 0; i < 8; i++) {
              positions[i] = new ChessPosition(row + i, col + i);
@@ -141,7 +145,11 @@ public class ChessPiece {
              positions[i + 24] = new ChessPosition(row - i, col + i);
          }
 
-         for (int i = 0; i < 27; i++) {
+         for (int i = 0; i < 32; i++) {
+             if (positions[i] == null) {
+                 continue;
+             }
+             // Check if the position is out of bounds
              if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8) {
                  positions[i] = null;
                  continue;
@@ -174,7 +182,7 @@ public class ChessPiece {
             positions[6] = new ChessPosition(row - 1, col + 2);
             positions[7] = new ChessPosition(row - 1, col - 2);
             for (int i = 0; i < 8; i++){
-                if (positions[i].getRow() < 0 || positions[i].getRow() > 7 || positions[i].getColumn() < 0 || positions[i].getColumn() > 7){
+                if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8){
                     positions[i] = null;
                     continue;
                 }
@@ -239,7 +247,7 @@ public class ChessPiece {
             positions[2] = new ChessPosition(row - 1, col - 1);
         }
         for (int i = 0; i < 3; i++){
-            if (positions[i].getRow() < 0 || positions[i].getRow() > 7 || positions[i].getColumn() < 0 || positions[i].getColumn() > 7){
+            if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8){
                 positions[i] = null;
                 continue;
             }

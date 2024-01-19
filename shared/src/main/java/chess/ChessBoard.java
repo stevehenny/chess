@@ -30,8 +30,8 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        int col = position.getColumn();
-        int row = position.getRow();
+        int col = position.getColumn() - 1;
+        int row = position.getRow() - 1;
         if (row < 8 && col < 8 && row >= 0 && col >= 0) {
             board[row][col] = piece;
         }
@@ -49,8 +49,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        int row = position.getRow();
-        int col = position.getColumn();
+        int row = position.getRow() -1;
+        int col = position.getColumn() - 1;
         return board[row][col];
     }
 

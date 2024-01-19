@@ -35,7 +35,7 @@ public class ChessMove {
     public boolean equals(Object obj) {
         if (obj instanceof ChessMove){
             ChessMove other = (ChessMove) obj;
-            return other.finalPosition.equals(this.finalPosition) && other.startPosition.equals(this.startPosition);
+            return this.finalPosition.equals(other.finalPosition) && this.startPosition.equals(other.startPosition) && this.promotionPiece == other.promotionPiece;
         }
         return false;
     }
