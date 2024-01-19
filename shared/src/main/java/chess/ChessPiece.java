@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Represents a single chess piece
@@ -68,6 +69,8 @@ public class ChessPiece {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         ChessPosition[] positions = new ChessPosition[8];
+        Collection<ChessMove> moves = new HashSet<>();
+
         positions[0] = new ChessPosition(row + 1, col);
         positions[1] = new ChessPosition(row + 1, col + 1);
         positions[2] = new ChessPosition(row, col + 1);
@@ -77,12 +80,177 @@ public class ChessPiece {
         positions[6] = new ChessPosition(row, col - 1);
         positions[7] = new ChessPosition(row + 1, col - 1);
         for (int i = 0; i < 8; i++){
-            if (positions[i].getRow() < 1 || positions[i].getRow() > 8 || positions[i].getColumn() < 1 || positions[i].getColumn() > 8){
+            if (positions[i].getRow() < 0 || positions[i].getRow() > 7 || positions[i].getColumn() < 0 || positions[i].getColumn() > 7){
                 positions[i] = null;
+                continue;
+            }
+            else{
+                moves.add(new ChessMove(myPosition, positions[i], null));
             }
         }
-        return
+        return moves;
     }
+
+    /**
+     * Calculates all the positions a queen can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+    public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessPosition[] positions = new ChessPosition[27];
+        Collection<ChessMove> moves = new HashSet<>();
+        for (int i = 0; i < 8; i++){
+            positions[i] = new ChessPosition(row + i, col);
+            positions[i + 8] = new ChessPosition(row - i, col);
+            positions[i + 16] = new ChessPosition(row, col + i);
+            positions[i + 24] = new ChessPosition(row, col - i);
+        }
+
+        for (int i = 0; i < 27; i++){
+            if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8){
+                positions[i] = null;
+                continue;
+            }
+            else{
+                moves.add(new ChessMove(myPosition, positions[i], null));
+            }
+        }
+        return moves;
+        }
+
+    /**
+     * Calculates all the positions a bishop can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+     public Collection<ChessMove>  bishopMoves(ChessBoard board, ChessPosition myPosition) {
+         int row = myPosition.getRow();
+         int col = myPosition.getColumn();
+         ChessPosition[] positions = new ChessPosition[27];
+         Collection<ChessMove> moves = new HashSet<>();
+         for (int i = 0; i < 8; i++) {
+             positions[i] = new ChessPosition(row + i, col + i);
+             positions[i + 8] = new ChessPosition(row - i, col - i);
+             positions[i + 16] = new ChessPosition(row + i, col - i);
+             positions[i + 24] = new ChessPosition(row - i, col + i);
+         }
+
+         for (int i = 0; i < 27; i++) {
+             if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8) {
+                 positions[i] = null;
+                 continue;
+             } else {
+                 moves.add(new ChessMove(myPosition, positions[i], null));
+             }
+         }
+         return moves;
+     }
+
+    /**
+     * Calculates all the positions a knight can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+        public Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            ChessPosition[] positions = new ChessPosition[8];
+            Collection<ChessMove> moves = new HashSet<>();
+
+            positions[0] = new ChessPosition(row + 2, col + 1);
+            positions[1] = new ChessPosition(row + 2, col - 1);
+            positions[2] = new ChessPosition(row - 2, col + 1);
+            positions[3] = new ChessPosition(row - 2, col - 1);
+            positions[4] = new ChessPosition(row + 1, col + 2);
+            positions[5] = new ChessPosition(row + 1, col - 2);
+            positions[6] = new ChessPosition(row - 1, col + 2);
+            positions[7] = new ChessPosition(row - 1, col - 2);
+            for (int i = 0; i < 8; i++){
+                if (positions[i].getRow() < 0 || positions[i].getRow() > 7 || positions[i].getColumn() < 0 || positions[i].getColumn() > 7){
+                    positions[i] = null;
+                    continue;
+                }
+                else{
+                    moves.add(new ChessMove(myPosition, positions[i], null));
+                }
+            }
+            return moves;
+        }
+
+    /**
+     * Calculates all the positions a rook can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+        public Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            ChessPosition[] positions = new ChessPosition[27];
+            Collection<ChessMove> moves = new HashSet<>();
+            for (int i = 0; i < 8; i++) {
+                positions[i] = new ChessPosition(row + i, col);
+                positions[i + 8] = new ChessPosition(row - i, col);
+                positions[i + 16] = new ChessPosition(row, col + i);
+                positions[i + 24] = new ChessPosition(row, col - i);
+            }
+
+            for (int i = 0; i < 27; i++) {
+                if (positions[i].getRow() < 0 || positions[i].getRow() > 8 || positions[i].getColumn() < 0 || positions[i].getColumn() > 8) {
+                    positions[i] = null;
+                    continue;
+                } else {
+                    moves.add(new ChessMove(myPosition, positions[i], null));
+                }
+            }
+            return moves;
+        }
+
+    /**
+     * Calculates all the positions a pawn can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+    public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessPosition[] positions = new ChessPosition[3];
+        Collection<ChessMove> moves = new HashSet<>();
+
+        if (this.pieceColor == ChessGame.TeamColor.WHITE){
+            positions[0] = new ChessPosition(row + 1, col);
+            positions[1] = new ChessPosition(row + 1, col + 1);
+            positions[2] = new ChessPosition(row + 1, col - 1);
+        }
+        else{
+            positions[0] = new ChessPosition(row - 1, col);
+            positions[1] = new ChessPosition(row - 1, col + 1);
+            positions[2] = new ChessPosition(row - 1, col - 1);
+        }
+        for (int i = 0; i < 3; i++){
+            if (positions[i].getRow() < 0 || positions[i].getRow() > 7 || positions[i].getColumn() < 0 || positions[i].getColumn() > 7){
+                positions[i] = null;
+                continue;
+            }
+            else{
+                moves.add(new ChessMove(myPosition, positions[i], null));
+            }
+        }
+        return moves;
+    }
+
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
