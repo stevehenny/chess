@@ -39,5 +39,18 @@ public class ChessPosition {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return row * 10 + col;
+    }
+
+    @Override
+    public String toString() {
+        return "ChessPosition{" +
+                "row=" + row +
+                ", col=" + col +
+                '}';
+    }
 }
 

@@ -51,7 +51,13 @@ public class ChessMove {
 
     @Override
     public int hashCode() {
-        return startPosition.hashCode() + finalPosition.hashCode();
+        // choose a prime number
+        int result = 11;
+
+        result += 17 * result + startPosition.hashCode();
+        result += 17 * result + finalPosition.hashCode();
+        result += (promotionPiece != null) ? 17 * result + promotionPiece.hashCode() : 0;
+        return result;
     }
 
     /**
