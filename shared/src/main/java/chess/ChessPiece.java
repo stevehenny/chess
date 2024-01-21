@@ -62,7 +62,7 @@ public class ChessPiece {
     /**
      * @return valid moves for the given lane
      */
-    private ChessPosition[] getValidLanes(ChessBoard board, ChessPosition[] positions) {
+    private void getValidLanes(ChessBoard board, ChessPosition[] positions) {
         for (int i = 0; i < positions.length; i++) {
             if (positions[i].getRow() < 1 || positions[i].getRow() > 8 || positions[i].getColumn() < 1 || positions[i].getColumn() > 8) {
                 positions[i] = null;
@@ -83,7 +83,7 @@ public class ChessPiece {
             }
 
         }
-        return positions;
+
     }
 
 
@@ -142,7 +142,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row + i + 1, col);
         }
         // check down positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -155,7 +155,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row - i - 1, col);
         }
         // check up positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -168,7 +168,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row, col + i + 1);
         }
         // check right positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -181,7 +181,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row, col - i - 1);
         }
         // check left positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -194,7 +194,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row + i + 1, col + i + 1);
         }
         // check down right positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -207,7 +207,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row - i - 1, col + i + 1);
         }
         // check down left positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -220,7 +220,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row + i + 1, col - i - 1);
         }
         // check up right positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -233,7 +233,7 @@ public class ChessPiece {
             positions[i] = new ChessPosition(row - i - 1, col - i - 1);
         }
         // check up left positions
-        positions = getValidLanes(board, positions);
+        getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
                 continue;
@@ -265,7 +265,7 @@ public class ChessPiece {
              positions[i] = new ChessPosition(row + i + 1, col + i + 1);
          }
          // check down right positions
-         positions = getValidLanes(board, positions);
+         getValidLanes(board, positions);
          for (ChessPosition position : positions) {
              if (position == null) {
                  continue;
@@ -278,7 +278,7 @@ public class ChessPiece {
              positions[i] = new ChessPosition(row - i - 1, col + i + 1);
          }
          // check down left positions
-         positions = getValidLanes(board, positions);
+         getValidLanes(board, positions);
          for (ChessPosition position : positions) {
              if (position == null) {
                  continue;
@@ -291,7 +291,7 @@ public class ChessPiece {
              positions[i] = new ChessPosition(row + i + 1, col - i - 1);
          }
          // check up right positions
-         positions = getValidLanes(board, positions);
+         getValidLanes(board, positions);
          for (ChessPosition position : positions) {
              if (position == null) {
                  continue;
@@ -304,7 +304,7 @@ public class ChessPiece {
              positions[i] = new ChessPosition(row - i - 1, col - i - 1);
          }
          // check up left positions
-         positions = getValidLanes(board, positions);
+         getValidLanes(board, positions);
          for (ChessPosition position : positions) {
              if (position == null) {
                  continue;
@@ -380,7 +380,7 @@ public class ChessPiece {
                 positions[i] = new ChessPosition(row + i + 1, col);
             }
             // check down positions
-            positions = getValidLanes(board, positions);
+            getValidLanes(board, positions);
             for (ChessPosition position : positions) {
                 if (position == null) {
                     continue;
@@ -393,7 +393,7 @@ public class ChessPiece {
                 positions[i] = new ChessPosition(row - i - 1, col);
             }
             // check up positions
-            positions = getValidLanes(board, positions);
+            getValidLanes(board, positions);
             for (ChessPosition position : positions) {
                 if (position == null) {
                     continue;
@@ -406,7 +406,7 @@ public class ChessPiece {
                 positions[i] = new ChessPosition(row, col + i + 1);
             }
             // check right positions
-            positions = getValidLanes(board, positions);
+            getValidLanes(board, positions);
             for (ChessPosition position : positions) {
                 if (position == null) {
                     continue;
@@ -419,7 +419,7 @@ public class ChessPiece {
                 positions[i] = new ChessPosition(row, col - i - 1);
             }
             // check left positions
-            positions = getValidLanes(board, positions);
+            getValidLanes(board, positions);
             for (ChessPosition position : positions) {
                 if (position == null) {
                     continue;
