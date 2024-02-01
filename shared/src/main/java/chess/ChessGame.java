@@ -110,6 +110,9 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i + 1, j + 1);
                 if (board.getPiece(position) != null && board.getPiece(position).getTeamColor() == teamColor) {
                     Collection<ChessMove> moves = validMoves(position);
+                    if(moves == null){
+                        continue;
+                    }
                     for (ChessMove move : moves) {
                         if (move.getEndPosition().equals(kingPosition)) {
                             return true;
