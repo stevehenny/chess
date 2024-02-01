@@ -48,7 +48,18 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        if (board.getPiece(startPosition) == null) {
+            return null;
+        }
+        if (board.getPiece(startPosition).getTeamColor() != teamTurn) {
+            return null;
+        }
+        if(board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING){
+            return kingValidMoves(startPosition);
+        }
+        else{
+            return board.getPiece(startPosition).pieceMoves(board, startPosition);
+        }
     }
 
     /**
@@ -61,14 +72,53 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+    public ChessPosition findKing(TeamColor teamColor){
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++){
+                if(board.getPiece(new ChessPosition(i+1, j+1)) != null){
+                    if(board.getPiece(new ChessPosition(i+1, j+1)).getTeamColor() == teamColor && board.getPiece(new ChessPosition(i+1, j+1)).getPieceType() == ChessPiece.PieceType.KING){
+                        return new ChessPosition(i+1, j+1);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
+
+
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        if (teamColor == TeamColor.WHITE) {
+            ChessPosition kingPosition = findKing(TeamColor.WHITE);
+            return isUnderAttack(kingPosition, TeamColor.BLACK);
+        } else {
+            ChessPosition kingPosition = findKing(TeamColor.BLACK);
+            return isUnderAttack(kingPosition, TeamColor.WHITE);
+        }
+    }
+
+    private boolean isUnderAttack(ChessPosition kingPosition, TeamColor teamColor) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPosition position = new ChessPosition(i + 1, j + 1);
+                if (board.getPiece(position) != null && board.getPiece(position).getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = validMoves(position);
+                    for (ChessMove move : moves) {
+                        if (move.getEndPosition().equals(kingPosition)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -78,7 +128,21 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (teamColor == TeamColor.WHITE){
+            ChessPosition kingPosition = findKing(TeamColor.WHITE);
+            return isInCheck(TeamColor.WHITE) && kingValidMoves(kingPosition).isEmpty();
+        }
+        else{
+            ChessPosition kingPosition = findKing(TeamColor.BLACK);
+            return isInCheck(TeamColor.BLACK) && kingValidMoves(kingPosition).isEmpty();
+        }
+
+    }
+
+    public Collection<ChessMove> kingValidMoves(ChessPosition startPosition){
+        Collection<ChessMove> moves = validMoves(startPosition);
+        moves.removeIf(move -> isUnderAttack(move.getEndPosition(), board.getPiece(startPosition).getTeamColor()));
+        return moves;
     }
 
     /**
@@ -98,7 +162,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -107,7 +171,7 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 
     @Override
