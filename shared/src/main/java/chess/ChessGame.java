@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -51,15 +52,43 @@ public class ChessGame {
         if (board.getPiece(startPosition) == null) {
             return null;
         }
-//        if (board.getPiece(startPosition).getTeamColor() != teamTurn) {
-//            return null;
-//        }
+
         if(board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING){
             return board.getPiece(startPosition).pieceMoves(board, startPosition);
         }
         else{
-            return board.getPiece(startPosition).pieceMoves(board, startPosition);
+            if(pieceIsPinned(startPosition)){
+                Collection<ChessMove> newMoves = new HashSet<>();
+                return newMoves;
+
+            }
+            else if(isInCheck(teamTurn)){
+                return moveToGetOutOfCheck(startPosition);
+            }
+            else{
+                return board.getPiece(startPosition).pieceMoves(board, startPosition);
+            }
+
         }
+    }
+
+    private Collection<ChessMove> moveToGetOutOfCheck(ChessPosition startPosition) {
+        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+        return moves;
+    }
+
+    private boolean pieceIsPinned(ChessPosition startPosition) {
+        ChessGame newGame = new ChessGame();
+        newGame.setBoard(board);
+        newGame.setTeamTurn(teamTurn);
+        ChessPosition kingPosition = newGame.findKing(teamTurn);
+        if (!isInCheck(teamTurn)){
+            newGame.board.addPiece(startPosition, null);
+            return newGame.isInCheck(teamTurn);
+
+        }
+        return false;
+
     }
 
     /**
