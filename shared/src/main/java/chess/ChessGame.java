@@ -54,7 +54,12 @@ public class ChessGame {
         }
 
         if (board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING) {
-            return board.getPiece(startPosition).pieceMoves(board, startPosition);
+            Collection<ChessMove> moves =  board.getPiece(startPosition).pieceMoves(board, startPosition);
+            if(moves == null){
+                return null;
+            }
+            moves.removeIf(this::moveWillCauseCheck);
+            return moves;
         } else {
             Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
             moves.removeIf(this::moveWillCauseCheck);
@@ -238,7 +243,34 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (teamColor == TeamColor.WHITE){
+            for(int i = 0; i<8; i++){
+                for(int j = 0; j<8; j++){
+                    ChessPosition position = new ChessPosition(i+1, j+1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() == TeamColor.WHITE){
+                        Collection<ChessMove> moves = board.getPiece(position).pieceMoves(board, position);
+                        if(moves != null && !moves.isEmpty()){
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        else{
+            for(int i = 0; i<8; i++){
+                for(int j = 0; j<8; j++){
+                    ChessPosition position = new ChessPosition(i+1, j+1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() == TeamColor.BLACK){
+                        Collection<ChessMove> moves = board.getPiece(position).pieceMoves(board, position);
+                        if(moves != null && !moves.isEmpty()){
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
     }
 
     /**
