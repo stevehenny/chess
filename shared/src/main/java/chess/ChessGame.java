@@ -53,27 +53,42 @@ public class ChessGame {
             return null;
         }
 
-        if(board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING){
+        if (board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING) {
             return board.getPiece(startPosition).pieceMoves(board, startPosition);
+        } else {
+            Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+            moves.removeIf(this::moveWillCauseCheck);
+            return moves;
         }
-        else{
-            if(pieceIsPinned(startPosition)){
-                Collection<ChessMove> newMoves = new HashSet<>();
-                return newMoves;
-
-            }
-            else if(isInCheck(teamTurn)){
-                return moveToGetOutOfCheck(startPosition);
-            }
-            else{
-                return board.getPiece(startPosition).pieceMoves(board, startPosition);
-            }
-
+    }
+    public boolean moveWillCauseCheck(ChessMove move) {
+        ChessGame newGame = new ChessGame();
+        newGame.setBoard(board);
+        newGame.setTeamTurn(teamTurn);
+        try {
+            newGame.makeMove(move);
+        } catch (InvalidMoveException e) {
+            return true;
         }
+        return newGame.isInCheck(teamTurn);
     }
 
     private Collection<ChessMove> moveToGetOutOfCheck(ChessPosition startPosition) {
         Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+        ChessPosition kingPosition = findKing(teamTurn);
+        ChessGame newGame = new ChessGame();
+        newGame.setBoard(board);
+        newGame.setTeamTurn(teamTurn);
+        for(ChessMove move : moves){
+            ChessPiece piece = board.getPiece(startPosition);
+            newGame.board.addPiece(startPosition, null);
+            newGame.board.addPiece(move.getEndPosition(), piece);
+            if(!newGame.isInCheck(teamTurn)){
+                moves.remove(move);
+            }
+            newGame.setBoard(board);
+            newGame.setTeamTurn(teamTurn);
+        }
         return moves;
     }
 
@@ -150,9 +165,15 @@ public class ChessGame {
 
         if (teamColor == TeamColor.WHITE) {
             ChessPosition kingPosition = findKing(TeamColor.WHITE);
+            if(kingPosition == null){
+                return false;
+            }
             return isUnderAttack(kingPosition, TeamColor.BLACK);
         } else {
             ChessPosition kingPosition = findKing(TeamColor.BLACK);
+            if(kingPosition == null){
+                return false;
+            }
             return isUnderAttack(kingPosition, TeamColor.WHITE);
         }
     }
@@ -162,7 +183,7 @@ public class ChessGame {
             for (int j = 0; j < 8; j++) {
                 ChessPosition position = new ChessPosition(i + 1, j + 1);
                 if (board.getPiece(position) != null && board.getPiece(position).getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = validMoves(position);
+                    Collection<ChessMove> moves = board.getPiece(position).pieceMoves(board, position);
                     if(moves == null){
                         continue;
                     }
@@ -186,11 +207,17 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         if (teamColor == TeamColor.WHITE){
             ChessPosition kingPosition = findKing(TeamColor.WHITE);
+            if(kingPosition == null){
+                return false;
+            }
             Collection<ChessMove> moves = board.getPiece(kingPosition).pieceMoves(board, kingPosition);
             return isInCheck(TeamColor.WHITE) && kingValidMoves(kingPosition, moves).isEmpty();
         }
         else{
             ChessPosition kingPosition = findKing(TeamColor.BLACK);
+            if(kingPosition == null){
+                return false;
+            }
             Collection<ChessMove> moves = board.getPiece(kingPosition).pieceMoves(board, kingPosition);
             return isInCheck(TeamColor.BLACK) && kingValidMoves(kingPosition, moves).isEmpty();
         }
