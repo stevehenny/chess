@@ -437,44 +437,49 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+    Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        Collection<ChessMove> moves = new HashSet<>();
         ChessPosition[] positions = new ChessPosition[4];
+        Collection<ChessMove> moves = new HashSet<>();
 
-        // Get all valid moves for non promoted pawns
-        if(this.getTeamColor() == ChessGame.TeamColor.WHITE){
-            positions[0] = (board.getPiece(new ChessPosition(row + 1, col)) == null) ? new ChessPosition(row + 1, col) : null ;
-            positions[1] = (board.getPiece(new ChessPosition(row + 1, col + 1)) != null && this.pieceColor != board.getPiece(new ChessPosition(row + 1, col + 1)).getTeamColor()) ? new ChessPosition(row + 1, col + 1) : null;
-            positions[2] = (board.getPiece(new ChessPosition(row + 1, col - 1)) != null && this.pieceColor != board.getPiece(new ChessPosition(row + 1, col - 1)).getTeamColor()) ? new ChessPosition(row + 1, col - 1) : null;
-            positions[3] = (row == 2 && (board.getPiece(new ChessPosition(row + 2 , col)) == null && board.getPiece(new ChessPosition(row + 1, col)) == null)) ? new ChessPosition(row + 2, col) : null;
+        // Check if white or black pawn
+        //WHITE
+        if(board.getPiece(myPosition).pieceColor == ChessGame.TeamColor.WHITE){
+            positions[0] = (board.getPiece(new ChessPosition(row + 1, col)) == null) ? new ChessPosition(row + 1, col) : null;
+            positions[1] = (col > 1 && board.getPiece(new ChessPosition(row + 1, col-1)) != null && board.getPiece(new ChessPosition(row + 1, col-1)).pieceColor !=board.getPiece(myPosition).pieceColor) ? new ChessPosition(row + 1, col-1) : null;
+            positions[2] = (col < 8 && board.getPiece(new ChessPosition(row + 1, col+1)) != null && board.getPiece(new ChessPosition(row + 1, col+1)).pieceColor !=board.getPiece(myPosition).pieceColor) ? new ChessPosition(row + 1, col+1) : null;
+            positions[3] = (row == 2 && board.getPiece(new ChessPosition(row + 1, col)) == null && board.getPiece(new ChessPosition(row + 2, col)) == null) ? new ChessPosition(row + 2, col) : null;
         }
+        //BLACK
         else{
-            positions[0] = (board.getPiece(new ChessPosition(row - 1, col)) == null) ? new ChessPosition(row - 1, col) : null ;
-            positions[1] = (board.getPiece(new ChessPosition(row - 1, col + 1)) != null && this.pieceColor != board.getPiece(new ChessPosition(row - 1, col + 1)).getTeamColor()) ? new ChessPosition(row - 1, col + 1) : null;
-            positions[2] = (board.getPiece(new ChessPosition(row - 1, col - 1)) != null && this.pieceColor != board.getPiece(new ChessPosition(row - 1, col - 1)).getTeamColor()) ? new ChessPosition(row - 1, col - 1) : null;
-            positions[3] = (row == 7 && (board.getPiece(new ChessPosition(row - 2, col)) == null && board.getPiece(new ChessPosition(row - 1, col)) == null)) ? new ChessPosition(row - 2, col) : null;
+            positions[0] = (board.getPiece(new ChessPosition(row - 1, col)) == null) ? new ChessPosition(row - 1, col) : null;
+            positions[1] = (col > 1 && board.getPiece(new ChessPosition(row - 1, col-1)) != null && board.getPiece(new ChessPosition(row - 1, col-1)).pieceColor !=board.getPiece(myPosition).pieceColor) ? new ChessPosition(row - 1, col-1) : null;
+            positions[2] = (col < 8 && board.getPiece(new ChessPosition(row - 1, col+1)) != null && board.getPiece(new ChessPosition(row - 1, col+1)).pieceColor !=board.getPiece(myPosition).pieceColor) ? new ChessPosition(row - 1, col+1) : null;
+            positions[3] = (row == 7 && board.getPiece(new ChessPosition(row - 1, col)) == null && board.getPiece(new ChessPosition(row - 2, col)) == null) ? new ChessPosition(row - 2, col) : null;
+
         }
-        // If pawn is towards the end of the board, add all possible promotions
-        if((row == 7 && this.pieceColor == ChessGame.TeamColor.WHITE) || (row == 2 && this.pieceColor == ChessGame.TeamColor.BLACK)){
-            for (ChessPosition position: positions){
-                if (position != null) {
-                    moves.add(new ChessMove(myPosition, position, ChessPiece.PieceType.QUEEN));
-                    moves.add(new ChessMove(myPosition, position, ChessPiece.PieceType.KNIGHT));
-                    moves.add(new ChessMove(myPosition, position, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(myPosition, position, ChessPiece.PieceType.BISHOP));
+
+        // Check if BLACK or WHITE is ready to promote
+        if((row == 2 && board.getPiece(myPosition).pieceColor == ChessGame.TeamColor.BLACK) || (row == 7 && board.getPiece(myPosition).pieceColor == ChessGame.TeamColor.WHITE)){
+            //Add each promotion move for each valid positions
+            for(ChessPosition position: positions){
+                if(position != null) {
+                    moves.add(new ChessMove(myPosition, position, PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, position, PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, position, PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, position, PieceType.ROOK));
                 }
             }
         }
-        else {
-            // if pawn is not promoted, add all valid moves
-            for (ChessPosition position : positions) {
+        else{
+            for(ChessPosition position: positions){
                 if (position != null) {
                     moves.add(new ChessMove(myPosition, position, null));
                 }
             }
         }
+
 
         return moves;
     }
@@ -489,21 +494,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        switch(type){
-            case KING:
-                return kingMoves(board, myPosition);
-            case QUEEN:
-                return queenMoves(board, myPosition);
-            case BISHOP:
-                return bishopMoves(board, myPosition);
-            case KNIGHT:
-                return knightMoves(board, myPosition);
-            case ROOK:
-                return rookMoves(board, myPosition);
-            case PAWN:
-                return pawnMoves(board, myPosition);
-            default:
-                throw new RuntimeException("Not implemented");
-        }
+        return switch (type) {
+            case KING -> kingMoves(board, myPosition);
+            case QUEEN -> queenMoves(board, myPosition);
+            case BISHOP -> bishopMoves(board, myPosition);
+            case KNIGHT -> knightMoves(board, myPosition);
+            case ROOK -> rookMoves(board, myPosition);
+            case PAWN -> pawnMoves(board, myPosition);
+            default -> throw new RuntimeException("Not implemented");
+        };
     }
 }
