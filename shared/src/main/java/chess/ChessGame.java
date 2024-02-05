@@ -111,6 +111,24 @@ public class ChessGame {
 
     }
 
+    private boolean tryMove(ChessMove move) {
+        ChessGame newGame = new ChessGame();
+        ChessBoard newBoard = new ChessBoard();
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++){
+                newBoard.addPiece(new ChessPosition(i+1, j+1), board.getPiece(new ChessPosition(i+1, j+1)));
+            }
+        }
+        newGame.setBoard(newBoard);
+        newGame.setTeamTurn(teamTurn);
+        if(isInCheck(teamTurn)){
+            newGame.board.addPiece(move.getEndPosition(), newGame.board.getPiece(move.getStartPosition()));
+            newGame.board.addPiece(move.getStartPosition(), null);
+            return !newGame.isInCheck(teamTurn);
+        }
+        return true;
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -127,6 +145,12 @@ public class ChessGame {
         if (board.getPiece(move.getStartPosition()).getTeamColor() != teamTurn) {
             throw new InvalidMoveException("Not this team's turn");
         }
+        if(isInCheck(teamTurn)){
+            if(!tryMove(move)){
+                throw new InvalidMoveException("Move does not get out of check");
+            }
+        }
+
         if (board.getPiece(move.getStartPosition()).pieceMoves(board, move.getStartPosition()).contains(move)) {
             if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN && (move.getEndPosition().getRow() == 1 || move.getEndPosition().getRow() == 8)){
                 board.addPiece(move.getEndPosition(), new ChessPiece(board.getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece()));
