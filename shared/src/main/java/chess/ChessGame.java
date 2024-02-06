@@ -53,14 +53,14 @@ public class ChessGame {
             return null;
         }
 
-        if (board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING) {
-            Collection<ChessMove> moves =  board.getPiece(startPosition).pieceMoves(board, startPosition);
-            if(moves == null){
-                return null;
-            }
-            moves.removeIf(this::moveWillCauseCheck);
-            return moves;
-        } else {
+//        if (board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING) {
+//            Collection<ChessMove> moves =  board.getPiece(startPosition).pieceMoves(board, startPosition);
+//            if(moves == null){
+//                return null;
+//            }
+//            moves.removeIf(this::moveWillCauseCheck);
+//            return moves;}
+         else {
             Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
             moves.removeIf(this::moveWillCauseCheck);
             return moves;
@@ -68,14 +68,18 @@ public class ChessGame {
     }
     public boolean moveWillCauseCheck(ChessMove move) {
         ChessGame newGame = new ChessGame();
-        newGame.setBoard(board);
-        newGame.setTeamTurn(teamTurn);
-        try {
-            newGame.makeMove(move);
-        } catch (InvalidMoveException e) {
-            return true;
+        ChessBoard newBoard = new ChessBoard();
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++){
+                newBoard.addPiece(new ChessPosition(i+1, j+1), board.getPiece(new ChessPosition(i+1, j+1)));
+            }
         }
-        return newGame.isInCheck(teamTurn);
+        newGame.setBoard(newBoard);
+        newGame.setTeamTurn(board.getPiece(move.getStartPosition()).getTeamColor());
+        newGame.board.addPiece(move.getEndPosition(), newGame.board.getPiece(move.getStartPosition()));
+        newGame.board.addPiece(move.getStartPosition(), null);
+
+        return newGame.isInCheck(newGame.teamTurn);
     }
 
     private Collection<ChessMove> moveToGetOutOfCheck(ChessPosition startPosition) {
@@ -124,8 +128,7 @@ public class ChessGame {
         if(isInCheck(teamTurn)){
             newGame.board.addPiece(move.getEndPosition(), newGame.board.getPiece(move.getStartPosition()));
             newGame.board.addPiece(move.getStartPosition(), null);
-            return !newGame.isInCheck(teamTurn);
-        }
+            return !newGame.isInCheck(teamTurn);}
         return true;
     }
 
