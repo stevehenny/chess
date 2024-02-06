@@ -53,13 +53,6 @@ public class ChessGame {
             return null;
         }
 
-//        if (board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING) {
-//            Collection<ChessMove> moves =  board.getPiece(startPosition).pieceMoves(board, startPosition);
-//            if(moves == null){
-//                return null;
-//            }
-//            moves.removeIf(this::moveWillCauseCheck);
-//            return moves;}
          else {
             Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
             moves.removeIf(this::moveWillCauseCheck);
@@ -82,38 +75,6 @@ public class ChessGame {
         return newGame.isInCheck(newGame.teamTurn);
     }
 
-    private Collection<ChessMove> moveToGetOutOfCheck(ChessPosition startPosition) {
-        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
-        ChessPosition kingPosition = findKing(teamTurn);
-        ChessGame newGame = new ChessGame();
-        newGame.setBoard(board);
-        newGame.setTeamTurn(teamTurn);
-        for(ChessMove move : moves){
-            ChessPiece piece = board.getPiece(startPosition);
-            newGame.board.addPiece(startPosition, null);
-            newGame.board.addPiece(move.getEndPosition(), piece);
-            if(!newGame.isInCheck(teamTurn)){
-                moves.remove(move);
-            }
-            newGame.setBoard(board);
-            newGame.setTeamTurn(teamTurn);
-        }
-        return moves;
-    }
-
-    private boolean pieceIsPinned(ChessPosition startPosition) {
-        ChessGame newGame = new ChessGame();
-        newGame.setBoard(board);
-        newGame.setTeamTurn(teamTurn);
-        ChessPosition kingPosition = newGame.findKing(teamTurn);
-        if (!isInCheck(teamTurn)){
-            newGame.board.addPiece(startPosition, null);
-            return newGame.isInCheck(teamTurn);
-
-        }
-        return false;
-
-    }
 
     private boolean tryMove(ChessMove move) {
         ChessGame newGame = new ChessGame();
