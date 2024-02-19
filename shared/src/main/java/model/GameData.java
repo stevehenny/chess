@@ -2,11 +2,11 @@ package model;
 import chess.ChessGame;
 
 public class GameData {
-    final int gameId;
-    final String gameName;
-    final ChessGame game;
-    final String whitePlayer;
-    final String blackPlayer;
+    private int gameId;
+    private String gameName;
+    private ChessGame game;
+    private String whitePlayer;
+    private String blackPlayer;
 
     public GameData(int gameId, String gameName, ChessGame game, String whitePlayer, String blackPlayer) {
         this.gameId = gameId;
@@ -34,6 +34,26 @@ public class GameData {
 
     public String getBlackPlayer() {
         return blackPlayer;
+    }
+
+    public void setGameId(int gameId) {
+        this.gameId = gameId;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public void setGame(ChessGame game) {
+        this.game = game;
+    }
+
+    public void setWhitePlayer(String whitePlayer) {
+        this.whitePlayer = whitePlayer;
+    }
+
+    public void setBlackPlayer(String blackPlayer) {
+        this.blackPlayer = blackPlayer;
     }
 
     @Override
