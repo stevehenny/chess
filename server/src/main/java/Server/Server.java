@@ -2,13 +2,11 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import model.*;
+import org.eclipse.jetty.util.log.Log;
 import spark.*;
 import services.GameService;
-import model.RegisterRequest;
-import model.RegisterResult;
-import model.LoginRequest;
-import model.UserData;
-import com.google.*;
+import com.google.gson.Gson;
 
 import javax.xml.crypto.Data;
 
@@ -52,7 +50,9 @@ public class Server {
     }
 
     public Object login(Request request, Response response) throws DataAccessException{
-
+        var req = new Gson().fromJson(request.body(), LoginRequest.class);
+        LoginResult login = gameService.login(req);
+        return new Gson().toJson(login);
     }
 
 

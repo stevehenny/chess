@@ -8,6 +8,8 @@ import model.AuthData;
 import model.RegisterRequest;
 import model.RegisterResult;
 import model.UserData;
+import model.LoginResult;
+import model.LoginRequest;
 
 import java.util.Objects;
 
@@ -48,5 +50,26 @@ public class GameService {
 
     RegisterResult registerResult = new RegisterResult(request.getUserName(), auth.getAuthToken(), "DEFAULT");
     return registerResult;
+    }
+
+    public LoginResult login(LoginRequest request) throws DataAccessException{
+        if(request.getUserName() == null || Objects.equals(request.getUserName(), "")){
+            throw new IllegalArgumentException("User must have a username");
+        }
+        if(request.getPassword() == null || Objects.equals(request.getPassword(), "")){
+            throw new IllegalArgumentException("User must have a password");
+        }
+        if(!userDAO.findUser(request.getUserName())){
+            throw new IllegalArgumentException("Username not found");
+        }
+        if(!userDAO.readUser(request.getUserName()).getPassword().equals(request.getPassword())){
+            throw new IllegalArgumentException("Incorrect password");
+        }
+        String username = request.getUserName();
+        AuthData auth = new AuthData();
+        auth.setUsername(username);
+        authDAO.createAuth(auth);
+        LoginResult loginResult = new LoginResult(username, auth.getAuthToken(), "DEFAULT");
+        return loginResult;
     }
 }
