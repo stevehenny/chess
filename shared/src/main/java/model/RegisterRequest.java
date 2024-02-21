@@ -1,24 +1,24 @@
 package model;
 
 public class RegisterRequest {
-    private String userName;
+    private String username;
     private String password;
     private String email;
 
-    public RegisterRequest(String userName, String password, String email) {
-        this.userName = userName;
+    public RegisterRequest(String username, String password, String email) {
+        this.username = username;
         this.password = password;
         this.email = email;
     }
 
-    public RegisterRequest() {
-        this.userName = null;
-        this.password = null;
-        this.email = null;
-    }
+//    public RegisterRequest() {
+//        this.userName = null;
+//        this.password = null;
+//        this.email = null;
+//    }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
     public String getPassword() {
@@ -30,7 +30,7 @@ public class RegisterRequest {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.username = userName;
     }
 
     public void setPassword(String password) {

@@ -1,14 +1,13 @@
 package model;
 
 public class AuthData {
-    private String username;
-    private String authToken;
+    private static String username;
+    private static String authToken;
 
     public AuthData() {
-
     }
 
-    public String getUsername() {
+    public static String getUsername() {
         return username;
     }
 

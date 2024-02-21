@@ -18,4 +18,8 @@ public class GameDAO {
     public void deleteGame() throws DataAccessException {
         gameData.clear();
     }
+
+    public Collection<GameData> getGames() throws DataAccessException {
+        return gameData;
+    }
 }

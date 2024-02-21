@@ -2,13 +2,12 @@ package model;
 
 public class RegisterResult {
     private String authToken;
-    private String userName;
+    private String username;
     private String message;
 
-    public RegisterResult(String authToken, String userName, String message) {
+    public RegisterResult(String authToken, String username) {
         this.authToken = authToken;
-        this.userName = userName;
-        this.message = message;
+        this.username = username;
     }
 
     public String getAuthToken() {
@@ -16,10 +15,10 @@ public class RegisterResult {
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
-
-    public String getMessage() {
-        return message;
-    }
+//
+//    public String getMessage() {
+//        return message;
+//    }
 }

@@ -2,24 +2,26 @@ package model;
 
 public class LoginResult {
     private String authToken;
-    private String userName;
+    private String username;
     private String message;
 
-    public LoginResult(String authToken, String userName,  String message) {
+    public LoginResult(String authToken, String username) {
         this.authToken = authToken;
-        this.userName = userName;
-        this.message = message;
+        this.username = username;
     }
 
+    public LoginResult(String message) {
+        this.message = message;
+    }
     public String getAuthToken() {
         return authToken;
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
-
-    public String getMessage() {
-        return message;
+    
+    public String getMessage(){
+        return "Username" + username + " " + "AuthToken: " + authToken;
     }
 }

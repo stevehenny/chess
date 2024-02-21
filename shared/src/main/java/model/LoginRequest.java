@@ -1,21 +1,21 @@
 package model;
 
 public class LoginRequest {
-    private String userName;
+    private String username;
     private String password;
 
     public LoginRequest(String userName, String password) {
-        this.userName = userName;
+        this.username = userName;
         this.password = password;
     }
 
     public LoginRequest() {
-        this.userName = null;
+        this.username = null;
         this.password = null;
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
     public String getPassword() {
@@ -23,7 +23,7 @@ public class LoginRequest {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.username = userName;
     }
 
     public void setPassword(String password) {

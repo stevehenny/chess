@@ -10,6 +10,11 @@ public class UserDAO {
         userData.add(user);
     }
     public UserData readUser(String username) throws DataAccessException{
+        for (UserData user : userData) {
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        }
         return null;
     }
     public void updateUser(UserData user) throws DataAccessException{
@@ -27,6 +32,15 @@ public class UserDAO {
         }
         return false;
     }
+
+//    public Userdata grabUser(String username) throws DataAccessException {
+//        for (UserData user : userData) {
+//            if (user.getUsername().equals(username)) {
+//                return user;
+//            }
+//        }
+//        return null;
+//    }
 
 
 
