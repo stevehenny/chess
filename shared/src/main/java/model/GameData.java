@@ -16,6 +16,14 @@ public class GameData {
         this.blackPlayer = blackPlayer;
     }
 
+    public GameData(String gameName){
+        this.gameName = gameName;
+        this.gameId = 0;
+        this.game = null;
+        this.whitePlayer = null;
+        this.blackPlayer = null;
+    }
+
     public int getGameId() {
         return gameId;
     }
@@ -91,4 +99,12 @@ public class GameData {
         return result;
     }
 
+    public void addPlayer(String username) {
+        if (whitePlayer == null) {
+            whitePlayer = username;
+        }
+        else if (blackPlayer == null) {
+            blackPlayer = username;
+        }
+    }
 }

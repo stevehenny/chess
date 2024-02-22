@@ -2,17 +2,20 @@ package dataAccess;
 import java.util.*;
 import model.GameData;
 public class GameDAO {
-    private Collection<GameData> gameData;
+    private static Collection<GameData> gameData;
     public GameDAO() {
         gameData = new ArrayList<GameData>();
     }
     public void createGame(GameData game) throws DataAccessException {
         gameData.add(game);
     }
-    public GameData readGame(int gameId) throws DataAccessException{
-        return null;
-    }
-    public void joinGame(int gameId, String username) throws DataAccessException{
+
+    public static void joinGame(int gameId, String username) throws DataAccessException{
+        for (GameData game : gameData) {
+            if (game.getGameId() == gameId) {
+                game.addPlayer(username);
+            }
+        }
     }
 
     public void deleteGame() throws DataAccessException {
@@ -21,5 +24,23 @@ public class GameDAO {
 
     public Collection<GameData> getGames() throws DataAccessException {
         return gameData;
+    }
+
+    public boolean findGame(String gameName) throws DataAccessException {
+        for (GameData game : gameData) {
+            if (game.getGameName().equals(gameName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public GameData getGame(int gameID) throws DataAccessException {
+        for (GameData game : gameData) {
+            if (game.getGameId() == gameID) {
+                return game;
+            }
+        }
+        return null;
     }
 }
