@@ -4,11 +4,12 @@ public class JoinGameRequest {
     private int gameID;
     private String authToken;
 
-    private String color;
+    private String playerColor;
 
-    public JoinGameRequest(int gameID, String authToken) {
+    public JoinGameRequest(int gameID, String authToken, String color) {
         this.gameID = gameID;
         this.authToken = authToken;
+        this.playerColor = color;
     }
 
     public int getGameID() {
@@ -28,14 +29,16 @@ public class JoinGameRequest {
     }
 
     public String getColor() {
-        return color;
+        return playerColor;
     }
 
     public void setColor(String color) {
-        this.color = color;
+        this.playerColor = color;
     }
 
     public String getMessage(){
         return "GameID: " + gameID + " " + "AuthToken: " + authToken;
     }
+
+
 }

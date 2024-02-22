@@ -12,7 +12,7 @@ public class GameDAO {
 
     public static void joinGame(int gameId, String username) throws DataAccessException{
         for (GameData game : gameData) {
-            if (game.getGameId() == gameId) {
+            if (game.getGameID() == gameId) {
                 game.addPlayer(username);
             }
         }
@@ -37,10 +37,13 @@ public class GameDAO {
 
     public GameData getGame(int gameID) throws DataAccessException {
         for (GameData game : gameData) {
-            if (game.getGameId() == gameID) {
+            if (game.getGameID() == gameID) {
                 return game;
             }
         }
         return null;
+    }
+    public Collection<GameData> listGames() throws DataAccessException {
+        return gameData;
     }
 }

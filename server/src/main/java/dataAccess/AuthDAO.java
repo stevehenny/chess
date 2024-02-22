@@ -7,7 +7,7 @@ public class AuthDAO {
         authData = new ArrayList<AuthData>();
     }
 
-    public static boolean findAuth(String authToken) {
+    public boolean findAuth(String authToken) {
         for (AuthData auth : authData) {
             if (auth.getAuthToken().equals(authToken)) {
                 return true;
@@ -20,9 +20,9 @@ public class AuthDAO {
         authData.add(auth);
     }
 
-    public AuthData readAuth(String username) throws DataAccessException{
+    public AuthData readAuth(String authToken) throws DataAccessException{
         for (AuthData auth : authData) {
-            if (AuthData.getUsername().equals(username)) {
+            if (auth.getAuthToken().equals(authToken)) {
                 return auth;
             }
         }
@@ -31,9 +31,9 @@ public class AuthDAO {
 
     public void updateAuth(AuthData auth) throws DataAccessException{
     }
-    public AuthData findAndDeleteAuth(String username) throws DataAccessException{
+    public AuthData findAndDeleteAuth(String authToken) throws DataAccessException{
         for (AuthData auth : authData) {
-            if (AuthData.getUsername().equals(username)) {
+            if (auth.getAuthToken().equals(authToken)) {
                 authData.remove(auth);
                 return auth;
             }

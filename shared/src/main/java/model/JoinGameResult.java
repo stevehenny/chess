@@ -6,10 +6,13 @@ public class JoinGameResult {
 
     private String color;
 
-    public JoinGameResult(int gameID, String authToken, String color) {
+    private String errorMessage;
+
+    public JoinGameResult(int gameID, String authToken, String color, String errorMessage) {
         this.gameID = gameID;
         this.authToken = authToken;
         this.color = color;
+        this.errorMessage = errorMessage;
     }
 
     public int getGameID() {
@@ -36,6 +39,13 @@ public class JoinGameResult {
         this.color = color;
     }
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     public String getMessage(){
         return "GameID: " + gameID + " " + "AuthToken: " + authToken;

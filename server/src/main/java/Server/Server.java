@@ -33,7 +33,7 @@ public class Server {
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
-
+        Spark.get("/game", this::listGames);
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -117,8 +117,8 @@ public class Server {
 
     public Object logout (Request request, Response response) throws DataAccessException {
         try {
-
-            gameService.logout(AuthData.getUsername());
+            AuthData auth = new AuthData();
+            gameService.logout(request.headers("Authorization"));
             return "";
         }
         catch (DataErrorException e) {
@@ -217,5 +217,30 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
+    private Object listGames(Request request, Response response)throws DataAccessException, DataErrorException{
+        try {
+            String authToken = request.headers("Authorization");
+            ListGameRequest listGamesRequest = new ListGameRequest(authToken);
+            ListGameResult result = new ListGameResult(gameService.listGames(listGamesRequest));
+            return new Gson().toJson(result);
+        }
+        catch(DataErrorException e){
+            if (e.getErrorCode() == 401) {
+                response.status(401);
+                JsonObject error = new JsonObject();
+                error.addProperty("error", "Unauthorized");
+                error.addProperty("message", e.getMessage());
+                return new Gson().toJson(error);
+            }
+            else {
+                response.status(500);
+                JsonObject error = new JsonObject();
+                error.addProperty("error", "Internal server error");
+                error.addProperty("message", e.getMessage());
+                return new Gson().toJson(error);
+            }
+        }
+    }
+
 
 }
