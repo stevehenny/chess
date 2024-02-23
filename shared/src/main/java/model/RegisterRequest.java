@@ -10,13 +10,6 @@ public class RegisterRequest {
         this.password = password;
         this.email = email;
     }
-
-//    public RegisterRequest() {
-//        this.userName = null;
-//        this.password = null;
-//        this.email = null;
-//    }
-
     public String getUserName() {
         return username;
     }
@@ -29,16 +22,5 @@ public class RegisterRequest {
         return email;
     }
 
-    public void setUserName(String userName) {
-        this.username = userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
 }

@@ -14,37 +14,12 @@ public class JoinGameResult {
         this.color = color;
         this.errorMessage = errorMessage;
     }
-
-    public int getGameID() {
-        return gameID;
-    }
-
     public String getAuthToken() {
         return authToken;
     }
 
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
-    }
-
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
     }
 
 }

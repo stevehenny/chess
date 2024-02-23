@@ -17,10 +17,6 @@ public class CreateGameRequest {
         return authToken;
     }
 
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
-    }
-
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }

@@ -58,7 +58,6 @@ public class ChessPiece {
         return pieceColor + " " + type;
     }
 
-
     /**
      * @return valid moves for the given lane
      */
@@ -85,8 +84,6 @@ public class ChessPiece {
         }
 
     }
-
-
     /**
      * Calculates all the positions a king can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -136,12 +133,10 @@ public class ChessPiece {
         int col = myPosition.getColumn();
         ChessPosition[] positions = new ChessPosition[8];
         Collection<ChessMove> moves = new HashSet<>();
-
         // check down lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row + i + 1, col);
         }
-        // check down positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -149,12 +144,10 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
         // check up lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row - i - 1, col);
         }
-        // check up positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -162,12 +155,10 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
         //check right lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row, col + i + 1);
         }
-        // check right positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -175,12 +166,10 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
         // check left lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row, col - i - 1);
         }
-        // check left positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -188,12 +177,10 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
         // check down right lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row + i + 1, col + i + 1);
         }
-        // check down right positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -201,12 +188,10 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
         // check down left lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row - i - 1, col + i + 1);
         }
-        // check down left positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -214,12 +199,10 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
         // check up right lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row + i + 1, col - i - 1);
         }
-        // check up right positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -227,12 +210,10 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
         // check up left lane
         for (int i = 0; i < 8; i++){
             positions[i] = new ChessPosition(row - i - 1, col - i - 1);
         }
-        // check up left positions
         getValidLanes(board, positions);
         for (ChessPosition position : positions) {
             if (position == null) {
@@ -240,10 +221,6 @@ public class ChessPiece {
             }
             moves.add(new ChessMove(myPosition, position, null));
         }
-
-
-
-
         return moves;
         }
 
@@ -479,13 +456,8 @@ public class ChessPiece {
                 }
             }
         }
-
-
         return moves;
     }
-
-
-
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in

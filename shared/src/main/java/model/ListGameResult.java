@@ -13,7 +13,4 @@ public class ListGameResult {
         return games;
     }
 
-    public void setGames(Collection<GameData> games) {
-        this.games = games;
-    }
 }

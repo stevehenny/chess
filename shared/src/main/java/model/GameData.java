@@ -99,12 +99,4 @@ public class GameData {
         return result;
     }
 
-    public void addPlayer(String username) {
-        if (whiteUsername == null) {
-            whiteUsername = username;
-        }
-        else if (blackUsername == null) {
-            blackUsername = username;
-        }
-    }
 }

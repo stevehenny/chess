@@ -10,14 +10,6 @@ public class GameDAO {
         gameData.add(game);
     }
 
-    public static void joinGame(int gameId, String username) throws DataAccessException{
-        for (GameData game : gameData) {
-            if (game.getGameID() == gameId) {
-                game.addPlayer(username);
-            }
-        }
-    }
-
     public void deleteGame() throws DataAccessException {
         gameData.clear();
     }

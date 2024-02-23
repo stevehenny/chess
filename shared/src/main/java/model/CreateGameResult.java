@@ -18,10 +18,6 @@ public class CreateGameResult {
         return authToken;
     }
 
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
-    }
-
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
