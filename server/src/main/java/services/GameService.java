@@ -1,18 +1,13 @@
 package services;
-
 import dataAccess.UserDAO;
 import dataAccess.DataAccessException;
 import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
 import model.*;
 import dataAccess.DataErrorException;
-
 import java.util.Collection;
-
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-
 
 public class GameService {
     private UserDAO userDAO = new UserDAO();
@@ -21,12 +16,24 @@ public class GameService {
 
     public GameService() {
     }
+
+    /**
+     * Clears all data from the database
+     * @throws DataAccessException
+     */
     public void clear() throws DataAccessException {
         userDAO.deleteUser();
         authDAO.deleteAuth();
         gameDAO.deleteGame();
     }
 
+    /**
+     * Registers a new user with the given username, password, and email
+     * @param request
+     * @return
+     * @throws DataErrorException
+     * @throws DataAccessException
+     */
     public RegisterResult register(RegisterRequest request) throws DataErrorException, DataAccessException {
         //check if username, password, or email is null
         if (request.getUserName() == null || request.getPassword() == null || request.getEmail() == null) {
@@ -55,6 +62,13 @@ public class GameService {
     return registerResult;
     }
 
+    /**
+     * Logs in the user with the given username and password
+     * @param request
+     * @return
+     * @throws DataAccessException
+     * @throws DataErrorException
+     */
     public LoginResult login(LoginRequest request) throws DataAccessException, DataErrorException {
         //check if username null or empty
         if(request.getUserName() == null || request.getUserName().equals("")){
@@ -86,34 +100,58 @@ public class GameService {
         return loginResult;
     }
 
+
+    /**
+     * Logs out the user with the given authToken
+     * @param request
+     * @throws DataErrorException
+     * @throws DataAccessException
+     */
     public void logout(String request) throws DataErrorException, DataAccessException {
-//        authDAO.findAndDeleteAuth(request);
+        //check if user is logged in
         if (authDAO.findAndDeleteAuth(request) == null) {
             throw new DataErrorException(401, "Error: User not logged in");
         }
     }
 
+    /**
+     * Lists all games
+     * @param request
+     * @return
+     * @throws DataAccessException
+     * @throws DataErrorException
+     */
     public Collection<GameData> listGames(ListGameRequest request) throws DataAccessException, DataErrorException{
+        //check if user is logged in
         if(request.getAuthToken() == null || !authDAO.findAuth(request.getAuthToken())){
             throw new DataErrorException(401, "Error: Unauthorized");
         }
 
         Collection<GameData> games = gameDAO.listGames();
+        //check if games is null
         if(games == null){
             throw new DataErrorException(401, "Error: No games found");
         }
         return games;
-
-
     }
 
+    /**
+     * Creates a new game with the given gameName
+     * @param gameRequest
+     * @return
+     * @throws DataAccessException
+     * @throws DataErrorException
+     */
     public CreateGameResult createGame(CreateGameRequest gameRequest) throws DataAccessException, DataErrorException {
+        //check if gameName is null or empty
         if (gameRequest.getGameName() == null || gameRequest.getGameName().equals("")) {
             throw new DataErrorException(400, "Error: Bad game request");
         }
+        //check if gameName is already taken
         if (gameDAO.findGame(gameRequest.getGameName())) {
             throw new DataErrorException(401, "Error: Game name already taken");
         }
+        //check if user is logged in
         if(!authDAO.findAuth(gameRequest.getAuthToken())){
             throw new DataErrorException(401, "Error: Unauthorized");
         }
@@ -131,34 +169,45 @@ public class GameService {
         return createGameResult;
     }
 
+    /**
+     * Joins a game with the given gameID and color
+     * @param gameRequest
+     * @return
+     * @throws DataErrorException
+     * @throws DataAccessException
+     */
     public JoinGameResult joinGame(JoinGameRequest gameRequest) throws DataErrorException, DataAccessException {
+        //check if gameID is less than or equal to 0
         if (gameRequest.getGameID() <= 0) {
             throw new DataErrorException(400, "Error: Bad game request");
         }
+        //check if user is logged in
         if(!authDAO.findAuth(gameRequest.getAuthToken())){
             throw new DataErrorException(401, "Error: Unauthorized");
         }
+        //check if game exists
         GameData game = gameDAO.getGame(gameRequest.getGameID());
         if(game.getBlackPlayer() != null && game.getWhitePlayer() != null){
             throw new DataErrorException(403, "Error: Game is full");
         }
+        //check if color is null or empty
         if (gameRequest.getColor() == null || gameRequest.getColor().equals("")){
             JoinGameResult joinGameResult = new JoinGameResult(game.getGameID(), game.getGameName(), null, null);
             return joinGameResult;
         }
-
+        //check if color is white and white player is null
         if (gameRequest.getColor().equals("WHITE") && game.getWhitePlayer() == null){
             gameDAO.getGame(gameRequest.getGameID()).setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
-//            gameDAO.joinGame(game.getGameId(), game.getWhitePlayer());
             JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken(), "WHITE", null);
             return joinGameResult;
         }
+        //check if color is black and black player is null
         else if (gameRequest.getColor().equals("BLACK") && game.getBlackPlayer() == null){
             gameDAO.getGame(gameRequest.getGameID()).setBlackPlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
-//            gameDAO.joinGame(game.getGameId(), game.getBlackPlayer());
             JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken(), "BLACK", null);
             return joinGameResult;
         }
+        //if color is not white or black
         else {
             throw new DataErrorException(403, "Error: Game is full");
         }
@@ -166,8 +215,4 @@ public class GameService {
 
     }
 
-
-    public GameDAO getGameDAO(int gameID) {
-        return gameDAO;
-    }
 }

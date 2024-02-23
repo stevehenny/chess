@@ -36,9 +36,5 @@ public class JoinGameRequest {
         this.playerColor = color;
     }
 
-    public String getMessage(){
-        return "GameID: " + gameID + " " + "AuthToken: " + authToken;
-    }
-
 
 }

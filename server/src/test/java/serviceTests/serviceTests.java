@@ -133,7 +133,6 @@ public class serviceTests {
         }
     }
 
-
     @Test
     public void testJoinGamePositive() throws DataAccessException, DataErrorException {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");

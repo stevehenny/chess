@@ -29,8 +29,6 @@ public class AuthDAO {
         return null;
     }
 
-    public void updateAuth(AuthData auth) throws DataAccessException{
-    }
     public AuthData findAndDeleteAuth(String authToken) throws DataAccessException{
         for (AuthData auth : authData) {
             if (auth.getAuthToken().equals(authToken)) {

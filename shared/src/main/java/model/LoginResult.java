@@ -20,8 +20,5 @@ public class LoginResult {
     public String getUserName() {
         return username;
     }
-    
-    public String getMessage(){
-        return "Username" + username + " " + "AuthToken: " + authToken;
-    }
+
 }

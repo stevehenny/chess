@@ -26,7 +26,4 @@ public class CreateGameResult {
         this.authToken = authToken;
     }
 
-    public String getMessage(){
-        return "GameID: " + gameID + " " + "AuthToken: " + authToken;
-    }
 }

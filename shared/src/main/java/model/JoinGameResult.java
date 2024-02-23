@@ -47,7 +47,4 @@ public class JoinGameResult {
         this.errorMessage = errorMessage;
     }
 
-    public String getMessage(){
-        return "GameID: " + gameID + " " + "AuthToken: " + authToken;
-    }
 }

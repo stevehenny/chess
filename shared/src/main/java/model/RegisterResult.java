@@ -17,8 +17,5 @@ public class RegisterResult {
     public String getUserName() {
         return username;
     }
-//
-//    public String getMessage() {
-//        return message;
-//    }
+
 }

@@ -22,10 +22,6 @@ public class GameDAO {
         gameData.clear();
     }
 
-    public Collection<GameData> getGames() throws DataAccessException {
-        return gameData;
-    }
-
     public boolean findGame(String gameName) throws DataAccessException {
         for (GameData game : gameData) {
             if (game.getGameName().equals(gameName)) {

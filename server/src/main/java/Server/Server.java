@@ -3,15 +3,10 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.*;
-import org.eclipse.jetty.util.log.Log;
 import spark.*;
 import services.GameService;
-import com.google.gson.Gson;
 import dataAccess.DataErrorException;
 import com.google.gson.JsonObject;
-
-
-import javax.xml.crypto.Data;
 
 public class Server {
 
@@ -21,6 +16,11 @@ public class Server {
         this.gameService =  new GameService();
     }
 
+    /**
+     * Starts the server
+     * @param desiredPort the port to start the server on
+     * @return the port the server is running on
+     */
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
@@ -38,22 +38,36 @@ public class Server {
         return Spark.port();
     }
 
-
-
+    /**
+     * Stops the server
+     */
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
     }
 
+    /**
+     * Clears all data from the database
+     * @param request
+     * @param response
+     * @return
+     * @throws DataAccessException
+     */
     public Object clear(Request request, Response response) throws DataAccessException {
         gameService.clear();
         response.status(200);
         return "";
     }
 
+    /**
+     * Registers a new user with the given username, password, and email
+     * @param request
+     * @param response
+     * @return
+     * @throws DataErrorException
+     * @throws DataAccessException
+     */
     public Object register(Request request, Response response) throws DataErrorException, DataAccessException{
-        // Register a new user
-        // If the request is invalid, return a 400, 403, or 500 response
         try {
             var req = new Gson().fromJson(request.body(), RegisterRequest.class);
             RegisterResult res = gameService.register(req);
@@ -66,18 +80,13 @@ public class Server {
                 error.addProperty("error", "Username, password, or email is null or empty");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
-
-
             }
-
             else if(e.getErrorCode() == 403) {
                 response.status(403);
                 JsonObject error = new JsonObject();
                 error.addProperty("error", "Already taken username");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
-
-
             }
             else {
                 response.status(500);
@@ -90,6 +99,14 @@ public class Server {
         }
     }
 
+    /**
+     * Logs in a user with the given username and password
+     * @param request
+     * @param response
+     * @return
+     * @throws DataAccessException
+     * @throws DataErrorException
+     */
     public Object login(Request request, Response response) throws DataAccessException, DataErrorException{
         try {
             var req = new Gson().fromJson(request.body(), LoginRequest.class);
@@ -104,7 +121,6 @@ public class Server {
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
-
             else {
                 response.status(500);
                 JsonObject error = new JsonObject();
@@ -115,6 +131,13 @@ public class Server {
         }
     }
 
+    /**
+     * Logs out the user with the given authToken
+     * @param request
+     * @param response
+     * @return
+     * @throws DataAccessException
+     */
     public Object logout (Request request, Response response) throws DataAccessException {
         try {
             AuthData auth = new AuthData();
@@ -141,6 +164,14 @@ public class Server {
 
     }
 
+    /**
+     * Creates a new game with the given authToken
+     * @param request
+     * @param response
+     * @return
+     * @throws DataAccessException
+     * @throws DataErrorException
+     */
     public Object createGame(Request request, Response response) throws DataAccessException, DataErrorException{
         try {
             String authToken = request.headers("Authorization");
@@ -174,6 +205,15 @@ public class Server {
             }
         }
     }
+
+    /**
+     * Joins a game with the given authToken
+     * @param request
+     * @param response
+     * @return
+     * @throws DataAccessException
+     * @throws DataErrorException
+     */
     private Object joinGame(Request request, Response response) {
         try{
             String authToken = request.headers("Authorization");
@@ -217,6 +257,15 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Lists all games
+     * @param request
+     * @param response
+     * @return
+     * @throws DataAccessException
+     * @throws DataErrorException
+     */
     private Object listGames(Request request, Response response)throws DataAccessException, DataErrorException{
         try {
             String authToken = request.headers("Authorization");
@@ -241,6 +290,4 @@ public class Server {
             }
         }
     }
-
-
 }
