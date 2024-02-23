@@ -89,7 +89,7 @@ public class GameService {
     public void logout(String request) throws DataErrorException, DataAccessException {
 //        authDAO.findAndDeleteAuth(request);
         if (authDAO.findAndDeleteAuth(request) == null) {
-            throw new DataErrorException(401, "Error: Internal server error");
+            throw new DataErrorException(401, "Error: User not logged in");
         }
     }
 
@@ -167,4 +167,7 @@ public class GameService {
     }
 
 
+    public GameDAO getGameDAO(int gameID) {
+        return gameDAO;
+    }
 }
