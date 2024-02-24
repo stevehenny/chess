@@ -84,12 +84,7 @@ public class ChessGame {
 
     private boolean tryMove(ChessMove move) {
         ChessGame newGame = new ChessGame();
-        ChessBoard newBoard = new ChessBoard();
-        for(int i = 0; i<8; i++){
-            for(int j = 0; j<8; j++){
-                newBoard.addPiece(new ChessPosition(i+1, j+1), board.getPiece(new ChessPosition(i+1, j+1)));
-            }
-        }
+        ChessBoard newBoard = mirrorBoard();
         newGame.setBoard(newBoard);
         newGame.setTeamTurn(teamTurn);
         if(isInCheck(teamTurn)){
