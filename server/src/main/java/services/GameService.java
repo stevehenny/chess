@@ -72,11 +72,11 @@ public class GameService {
     public LoginResult login(LoginRequest request) throws DataAccessException, DataErrorException {
         //check if username null or empty
         if(request.getUserName() == null || request.getUserName().equals("")){
-            throw new DataErrorException(401,"Error: Unauthorized");
+            throw new DataErrorException(401,"Error: Unauthorized login");
         }
         //check if password is null or empty
         if(request.getPassword() == null || request.getPassword().equals("")){
-            throw new DataErrorException(401, "Error: Unauthorized");
+            throw new DataErrorException(401, "Error: Unauthorized login");
         }
         //check if username exists
         if(!userDAO.findUser(request.getUserName())){
@@ -124,7 +124,7 @@ public class GameService {
     public Collection<GameData> listGames(ListGameRequest request) throws DataAccessException, DataErrorException{
         //check if user is logged in
         if(request.getAuthToken() == null || !authDAO.findAuth(request.getAuthToken())){
-            throw new DataErrorException(401, "Error: Unauthorized");
+            throw new DataErrorException(401, "Error: Unauthorized list game request");
         }
 
         Collection<GameData> games = gameDAO.listGames();
@@ -153,7 +153,7 @@ public class GameService {
         }
         //check if user is logged in
         if(!authDAO.findAuth(gameRequest.getAuthToken())){
-            throw new DataErrorException(401, "Error: Unauthorized");
+            throw new DataErrorException(401, "Error: Unauthorized creation of game");
         }
 
         GameData game = new GameData(gameRequest.getGameName());
@@ -179,11 +179,11 @@ public class GameService {
     public JoinGameResult joinGame(JoinGameRequest gameRequest) throws DataErrorException, DataAccessException {
         //check if gameID is less than or equal to 0
         if (gameRequest.getGameID() <= 0) {
-            throw new DataErrorException(400, "Error: Bad game request");
+            throw new DataErrorException(400, "Error: Bad request to join game");
         }
         //check if user is logged in
         if(!authDAO.findAuth(gameRequest.getAuthToken())){
-            throw new DataErrorException(401, "Error: Unauthorized");
+            throw new DataErrorException(401, "Error: Unauthorized join game");
         }
         //check if game exists
         GameData game = gameDAO.getGame(gameRequest.getGameID());

@@ -91,7 +91,7 @@ public class Server {
             else {
                 response.status(500);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Internal server error");
+                error.addProperty("error", "Server error");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
@@ -117,7 +117,7 @@ public class Server {
             if (e.getErrorCode() == 401) {
                 response.status(401);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Unauthorized");
+                error.addProperty("error", "Unauthorized login");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
@@ -148,7 +148,7 @@ public class Server {
             if (e.getErrorCode() == 401) {
                 response.status(401);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Unauthorized");
+                error.addProperty("error", "Unauthorized logout");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
@@ -192,14 +192,14 @@ public class Server {
             else if (e.getErrorCode() == 401) {
                 response.status(401);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Unauthorized");
+                error.addProperty("error", "Unauthorized creation of game");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
             else {
                 response.status(500);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Internal server error");
+                error.addProperty("error", "Internal game server error");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
@@ -226,14 +226,14 @@ public class Server {
             if (e.getErrorCode() == 400) {
                 response.status(400);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "bad request");
+                error.addProperty("error", "bad request to join game");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
             else if (e.getErrorCode() == 401) {
                 response.status(401);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Unauthorized");
+                error.addProperty("error", "Unauthorized join game");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
 
@@ -248,7 +248,7 @@ public class Server {
             else {
                 response.status(500);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Internal server error");
+                error.addProperty("error", "Internal server error: cannot join game");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
@@ -277,14 +277,14 @@ public class Server {
             if (e.getErrorCode() == 401) {
                 response.status(401);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Unauthorized");
+                error.addProperty("error", "Unauthorized list games request");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
             else {
                 response.status(500);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Internal server error");
+                error.addProperty("error", "Internal server error: can't list games");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }

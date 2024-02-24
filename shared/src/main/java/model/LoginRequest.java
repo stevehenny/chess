@@ -22,11 +22,4 @@ public class LoginRequest {
         return password;
     }
 
-    public void setUserName(String userName) {
-        this.username = userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

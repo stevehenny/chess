@@ -48,14 +48,6 @@ public class GameData {
         this.gameID = gameId;
     }
 
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
-    }
-
-    public void setGame(ChessGame game) {
-        this.game = game;
-    }
-
     public void setWhitePlayer(String whitePlayer) {
         this.whiteUsername = whitePlayer;
     }
