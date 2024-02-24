@@ -59,14 +59,20 @@ public class ChessGame {
             return moves;
         }
     }
-    public boolean moveWillCauseCheck(ChessMove move) {
-        ChessGame newGame = new ChessGame();
+
+    public ChessBoard mirrorBoard(){
         ChessBoard newBoard = new ChessBoard();
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++){
                 newBoard.addPiece(new ChessPosition(i+1, j+1), board.getPiece(new ChessPosition(i+1, j+1)));
             }
         }
+        return newBoard;
+    }
+    public boolean moveWillCauseCheck(ChessMove move) {
+        ChessGame newGame = new ChessGame();
+        ChessBoard newBoard = mirrorBoard();
+
         newGame.setBoard(newBoard);
         newGame.setTeamTurn(board.getPiece(move.getStartPosition()).getTeamColor());
         newGame.board.addPiece(move.getEndPosition(), newGame.board.getPiece(move.getStartPosition()));

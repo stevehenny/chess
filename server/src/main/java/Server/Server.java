@@ -156,7 +156,7 @@ public class Server {
             else {
                 response.status(500);
                 JsonObject error = new JsonObject();
-                error.addProperty("error", "Internal server error");
+                error.addProperty("error", "Internal server error: logout failed");
                 error.addProperty("message", e.getMessage());
                 return new Gson().toJson(error);
             }
