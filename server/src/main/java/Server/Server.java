@@ -3,6 +3,8 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.*;
+import model.requests.*;
+import model.results.*;
 import spark.*;
 import services.GameService;
 import dataAccess.DataErrorException;

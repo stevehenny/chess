@@ -5,6 +5,8 @@ import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
 import dataAccess.*;
 import model.*;
+import model.results.*;
+import model.requests.*;
 import dataAccess.DataErrorException;
 import java.util.Collection;
 import java.util.UUID;

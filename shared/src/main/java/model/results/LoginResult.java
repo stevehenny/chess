@@ -1,10 +1,10 @@
-package model;
+package model.results;
 
-public class RegisterResult {
+public class LoginResult {
     private String authToken;
     private String username;
 
-    public RegisterResult(String authToken, String username) {
+    public LoginResult(String authToken, String username) {
         this.authToken = authToken;
         this.username = username;
     }
@@ -12,6 +12,5 @@ public class RegisterResult {
     public String getAuthToken() {
         return authToken;
     }
-
 
 }

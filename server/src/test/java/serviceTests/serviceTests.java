@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import services.GameService;
 import model.*;
+import model.requests.*;
+import model.results.*;
 
 import java.util.List;
 

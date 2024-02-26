@@ -1,15 +1,13 @@
-package model;
+package model.results;
 
-public class JoinGameRequest {
+public class CreateGameResult {
     private int gameID;
     private String authToken;
 
-    private String playerColor;
 
-    public JoinGameRequest(int gameID, String authToken, String color) {
+    public CreateGameResult(int gameID) {
         this.gameID = gameID;
-        this.authToken = authToken;
-        this.playerColor = color;
+
     }
 
     public int getGameID() {
@@ -22,10 +20,6 @@ public class JoinGameRequest {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
-    }
-
-    public String getColor() {
-        return playerColor;
     }
 
 }

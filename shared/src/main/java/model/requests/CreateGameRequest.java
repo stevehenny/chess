@@ -1,4 +1,4 @@
-package model;
+package model.requests;
 
 public class CreateGameRequest {
     private String gameName;
