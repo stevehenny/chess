@@ -1,45 +1,17 @@
 package dataAccess;
 import java.util.*;
 import model.AuthData;
-public class AuthDAO {
-    private static Collection<AuthData> authData;
-    public AuthDAO() {
-        authData = new ArrayList<AuthData>();
-    }
+public interface AuthDAO {
 
-    public boolean findAuth(String authToken) {
-        for (AuthData auth : authData) {
-            if (auth.getAuthToken().equals(authToken)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    public boolean findAuth(String authToken);
 
-    public void createAuth(AuthData auth) throws DataAccessException {
-        authData.add(auth);
-    }
 
-    public AuthData readAuth(String authToken) throws DataAccessException{
-        for (AuthData auth : authData) {
-            if (auth.getAuthToken().equals(authToken)) {
-                return auth;
-            }
-        }
-        return null;
-    }
 
-    public AuthData findAndDeleteAuth(String authToken) throws DataAccessException{
-        for (AuthData auth : authData) {
-            if (auth.getAuthToken().equals(authToken)) {
-                authData.remove(auth);
-                return auth;
-            }
-        }
-        return null;
-    }
+    public void createAuth(AuthData auth) throws DataAccessException ;
 
-    public void deleteAuth() throws DataAccessException {
-        authData.clear();
-    }
+    public AuthData readAuth(String authToken) throws DataAccessException;
+
+    public AuthData findAndDeleteAuth(String authToken) throws DataAccessException;
+
+    public void deleteAuth() throws DataAccessException;
 }

@@ -13,9 +13,9 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameService {
-    private UserDAO userDAO = new UserDAO();
-    private AuthDAO authDAO = new AuthDAO();
-    private GameDAO gameDAO = new GameDAO();
+    private UserDAOMem userDAO = new UserDAOMem();
+    private AuthDAOMem authDAO = new AuthDAOMem();
+    private GameDAOMem gameDAO = new GameDAOMem();
 
     public GameService() {
     }
