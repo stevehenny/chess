@@ -43,9 +43,7 @@ public class UserDAOsql implements UserDAO{
 
     public UserData readUser(String username) throws DataErrorException{
         var statement = "SELECT * FROM Users WHERE username = ?";
-        try{
-            var conn = DatabaseManager.getConnection();
-            var stmt = conn.prepareStatement(statement);
+        try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             stmt.setString(1, username);
             var rs = stmt.executeQuery();
             if(rs.next()){
@@ -71,9 +69,7 @@ public class UserDAOsql implements UserDAO{
 
     public boolean findUser(String username) throws DataErrorException {
         var statement = "SELECT * FROM Users WHERE username = ?";
-        try {
-            var conn = DatabaseManager.getConnection();
-            var stmt = conn.prepareStatement(statement);
+        try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)) {
             stmt.setString(1, username);
             var rs = stmt.executeQuery();
             return rs.next();

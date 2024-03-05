@@ -16,7 +16,7 @@ public class serviceTests {
     private GameService gameService = new GameService();
 
     @BeforeEach
-    public void clearService() throws DataAccessException {
+    public void clearService() throws DataAccessException, DataErrorException {
         gameService.clear();
     }
     @Test

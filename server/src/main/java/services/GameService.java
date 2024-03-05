@@ -13,18 +13,24 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameService {
-    private UserDAOMem userDAO = new UserDAOMem();
-    private AuthDAOMem authDAO = new AuthDAOMem();
-    private GameDAOMem gameDAO = new GameDAOMem();
+    UserDAO userDAO;
+    AuthDAO authDAO;
+    GameDAO gameDAO;
 
-    public GameService() {
+    public GameService()  {
+        try {
+            userDAO = new UserDAOsql();
+            authDAO = new AuthDAOsql();
+            gameDAO = new GameDAOsql();
+        } catch (DataErrorException e) {
+            throw new RuntimeException(e);
+        }
     }
-
     /**
      * Clears all data from the database
      * @throws DataAccessException
      */
-    public void clear() throws DataAccessException {
+    public void clear() throws DataErrorException, DataAccessException {
         userDAO.deleteUser();
         authDAO.deleteAuth();
         gameDAO.deleteGame();

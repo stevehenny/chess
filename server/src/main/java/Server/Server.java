@@ -55,7 +55,7 @@ public class Server {
      * @return
      * @throws DataAccessException
      */
-    public Object clear(Request request, Response response) throws DataAccessException {
+    public Object clear(Request request, Response response) throws DataErrorException, DataAccessException {
         gameService.clear();
         response.status(200);
         return "";
