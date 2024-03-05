@@ -12,12 +12,12 @@ import static dataAccess.DatabaseManager.configureDatabase;
 public class AuthDAOsql implements  AuthDAO{
 
     private static Collection<AuthData> authData;
-    public AuthDAOsql() throws DataAccessException {
+    public AuthDAOsql() throws DataErrorException {
         configureDatabase();
     }
 
     @Override
-    public boolean findAuth(String authToken) throws DataAccessException{
+    public boolean findAuth(String authToken) throws DataErrorException{
         var statement = "SELECT * FROM Auth WHERE authToken = ?";
         try {
             var conn = DatabaseManager.getConnection();
@@ -27,21 +27,21 @@ public class AuthDAOsql implements  AuthDAO{
             return rs.next();
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while finding AuthData: " + statement);
+            throw new DataErrorException(500, "Error encountered while finding AuthData: " + statement);
         }
     }
 
-    public void createAuth(AuthData auth) throws DataAccessException {
+    public void createAuth(AuthData auth) throws DataErrorException {
         var statement = "INSERT INTO Auth (authToken, username) VALUES (?, ?)";
         var authToken = auth.getAuthToken();
         var username = auth.getUsername();
         int result = executeStatement(statement, authToken, username);
         if (result != 1) {
-            throw new DataAccessException("Failed to insert AuthData");
+            throw new DataErrorException(500,"Failed to insert AuthData");
         }
     }
 
-    private int executeStatement(String statement, String authToken, String username) throws DataAccessException {
+    private int executeStatement(String statement, String authToken, String username) throws DataErrorException {
         try{
             var conn = DatabaseManager.getConnection();
             var stmt = conn.prepareStatement(statement);
@@ -54,11 +54,11 @@ public class AuthDAOsql implements  AuthDAO{
             return stmt.executeUpdate();
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while executing SQL statement: " + e.getMessage());
+            throw new DataErrorException(500, "Error encountered while executing SQL statement: " + e.getMessage());
         }
     }
 
-    public AuthData readAuth(String authToken) throws DataAccessException{
+    public AuthData readAuth(String authToken) throws DataErrorException{
         var statement = "SELECT * FROM Auth WHERE authToken = ?";
         try{
             var conn = DatabaseManager.getConnection();
@@ -76,24 +76,24 @@ public class AuthDAOsql implements  AuthDAO{
             return null;
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while reading AuthData: " + statement);
+            throw new DataErrorException(500,"Error encountered while reading AuthData: " + statement);
         }
     }
 
-    public AuthData findAndDeleteAuth(String authToken) throws DataAccessException{
-        var statement = "SELECT FROM auth WHERE authToken = ?";
+    public AuthData findAndDeleteAuth(String authToken) throws DataErrorException{
+        var statement = "SELECT FROM Auth WHERE authToken = ?";
         var result = executeStatement(statement, authToken, null);
         if (result != 1) {
-            throw new DataAccessException("Failed to find AuthData");
+            throw new DataErrorException(500, "Failed to find AuthData");
         }
         return null;
     }
 
-    public void deleteAuth() throws DataAccessException {
+    public void deleteAuth() throws DataErrorException {
         var statement = "DELETE FROM Auth";
         int result = executeStatement(statement, null, null);
         if (result != 1) {
-            throw new DataAccessException("Failed to delete AuthData");
+            throw new DataErrorException(500, "Failed to delete AuthData");
         }
     }
 }

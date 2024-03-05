@@ -8,12 +8,12 @@ import java.util.Collection;
 import static dataAccess.DatabaseManager.configureDatabase;
 
 public class GameDAOsql implements GameDAO{
-    public GameDAOsql() throws DataAccessException{
+    public GameDAOsql() throws DataErrorException{
         configureDatabase();
     }
 
-    public void createGame(GameData game) throws DataAccessException {
-        var statement = "INSERT INTO games (gameID, gameName, whiteUsername, blackUsername, game) VALUES (?, ?, ?, ?, ?)";
+    public void createGame(GameData game) throws DataErrorException {
+        var statement = "INSERT INTO Games (gameID, gameName, whiteUsername, blackUsername, game) VALUES (?, ?, ?, ?, ?)";
         var gameID = game.getGameID();
         var gameName = game.getGameName();
         var whiteUsername = game.getWhitePlayer();
@@ -21,11 +21,11 @@ public class GameDAOsql implements GameDAO{
         var gameData = game.getGame();
         int result = executeStatement(statement, gameID, gameName, whiteUsername, blackUsername, gameData);
         if (result != 1) {
-            throw new DataAccessException("Failed to insert GameData");
+            throw new DataErrorException(500, "Failed to insert GameData");
         }
     }
 
-    private int executeStatement(String statement, int gameID, String gameName, String whiteUsername, String blackUsername, Object gameData) throws DataAccessException {
+    private int executeStatement(String statement, int gameID, String gameName, String whiteUsername, String blackUsername, Object gameData) throws DataErrorException {
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             if(gameID != 0) {
                 stmt.setInt(1, gameID);
@@ -45,19 +45,19 @@ public class GameDAOsql implements GameDAO{
             return stmt.executeUpdate();
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while executing SQL statement: " + statement);
+            throw new DataErrorException(500,"Error encountered while executing SQL statement: " + statement);
         }
     }
 
-    public void deleteGame() throws DataAccessException {
-        var statement = "DELETE FROM games";
+    public void deleteGame() throws DataAccessException, DataErrorException {
+        var statement = "DELETE FROM Games";
         int result = executeStatement(statement, 0, null, null, null, null);
         if (result < 0) {
-            throw new DataAccessException("Failed to delete GameData");
+            throw new DataErrorException(500, "Failed to delete GameData");
         }
     }
 
-    public boolean findGame(String gameName) throws DataAccessException {
+    public boolean findGame(String gameName) throws DataErrorException {
         var statement = "SELECT * FROM games WHERE gameName = ?";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             stmt.setString(1, gameName);
@@ -65,12 +65,12 @@ public class GameDAOsql implements GameDAO{
             return rs.next();
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while finding GameData: " + statement);
+            throw new DataErrorException(500, "Error encountered while finding GameData: " + statement);
         }
     }
 
-    public GameData getGame(int gameID) throws DataAccessException {
-        var statement = "SELECT * FROM games WHERE gameID = ?";
+    public GameData getGame(int gameID) throws DataErrorException {
+        var statement = "SELECT * FROM Games WHERE gameID = ?";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             stmt.setInt(1, gameID);
             var rs = stmt.executeQuery();
@@ -87,11 +87,11 @@ public class GameDAOsql implements GameDAO{
             return null;
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while finding GameData: " + statement);
+            throw new DataErrorException(500, "Error encountered while finding GameData: " + statement);
         }
     }
-    public Collection<GameData> listGames() throws DataAccessException {
-        var statement = "SELECT * FROM games";
+    public Collection<GameData> listGames() throws DataErrorException {
+        var statement = "SELECT * FROM Games";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             var rs = stmt.executeQuery();
             Collection<GameData> games = new ArrayList<GameData>();
@@ -109,7 +109,7 @@ public class GameDAOsql implements GameDAO{
             return games;
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while listing GameData: " + statement);
+            throw new DataErrorException(500, "Error encountered while listing GameData: " + statement);
         }
     }
 }

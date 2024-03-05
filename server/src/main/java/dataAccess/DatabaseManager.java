@@ -34,7 +34,7 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static void createDatabase() throws DataAccessException {
+    static void createDatabase() throws DataErrorException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
             var conn = DriverManager.getConnection(connectionUrl, user, password);
@@ -42,7 +42,7 @@ public class DatabaseManager {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataErrorException(500, e.getMessage());
         }
     }
 
@@ -58,13 +58,13 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    static Connection getConnection() throws DataErrorException {
         try {
             var conn = DriverManager.getConnection(connectionUrl, user, password);
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataErrorException(500, e.getMessage());
         }
     }
 
@@ -90,14 +90,14 @@ public class DatabaseManager {
 
     };
 
-    public static void main(String[] args) throws DataAccessException {
+    public static void main(String[] args) throws DataErrorException {
         configureDatabase();
     }
 
     /**
      * Configure the database.
      */
-    static void configureDatabase() throws DataAccessException {
+    static void configureDatabase() throws DataErrorException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -106,7 +106,7 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataErrorException(500, e.getMessage());
         }
     }
 

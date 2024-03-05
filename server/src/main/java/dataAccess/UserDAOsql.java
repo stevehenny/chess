@@ -9,21 +9,21 @@ import static dataAccess.DatabaseManager.configureDatabase;
 
 public class UserDAOsql implements UserDAO{
 
-    public UserDAOsql() throws DataAccessException{
+    public UserDAOsql() throws DataErrorException{
         configureDatabase();
     }
-    public void createUser(UserData user) throws DataAccessException {
-        var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+    public void createUser(UserData user) throws DataErrorException {
+        var statement = "INSERT INTO Users (username, password, email) VALUES (?, ?, ?)";
         var username = user.getUsername();
         var password = user.getPassword();
         var email = user.getEmail();
         int result = executeStatement(statement, username, password, email);
         if (result != 1) {
-            throw new DataAccessException("Failed to insert UserData" + statement);
+            throw new DataErrorException(500, "Failed to insert UserData" + statement);
         }
     }
 
-    private int executeStatement(String statement, String username, String password, Object email) throws DataAccessException {
+    private int executeStatement(String statement, String username, String password, Object email) throws DataErrorException {
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             if(username != null) {
                 stmt.setString(1, username);
@@ -37,12 +37,12 @@ public class UserDAOsql implements UserDAO{
             return stmt.executeUpdate();
         }
         catch(Exception e){
-        throw new DataAccessException("Error encountered while executing SQL statement: " + statement);
+        throw new DataErrorException(500, "Error encountered while executing SQL statement: " + statement);
         }
     }
 
-    public UserData readUser(String username) throws DataAccessException{
-        var statement = "SELECT * FROM users WHERE username = ?";
+    public UserData readUser(String username) throws DataErrorException{
+        var statement = "SELECT * FROM Users WHERE username = ?";
         try{
             var conn = DatabaseManager.getConnection();
             var stmt = conn.prepareStatement(statement);
@@ -54,22 +54,22 @@ public class UserDAOsql implements UserDAO{
             return null;
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while reading UserData: " + statement);
+            throw new DataErrorException(500,"Error encountered while reading UserData: " + statement);
         }
     }
 
-    public void deleteUser() throws DataAccessException {
+    public void deleteUser() throws DataErrorException {
         var statement = "TRUNCATE TABLE Users";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             stmt.executeUpdate();
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while deleting UserData: " + statement);
+            throw new DataErrorException(500, "Error encountered while deleting UserData: " + statement);
         }
 
     }
 
-    public boolean findUser(String username) throws DataAccessException {
+    public boolean findUser(String username) throws DataErrorException {
         var statement = "SELECT * FROM Users WHERE username = ?";
         try {
             var conn = DatabaseManager.getConnection();
@@ -79,7 +79,7 @@ public class UserDAOsql implements UserDAO{
             return rs.next();
         }
         catch(Exception e){
-            throw new DataAccessException("Error encountered while finding UserData: " + statement);
+            throw new DataErrorException(500,"Error encountered while finding UserData: " + statement);
         }
     }
 
