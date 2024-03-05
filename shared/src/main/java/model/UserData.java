@@ -52,4 +52,8 @@ public class UserData {
         result = 31 * result + (email != null ? email.hashCode() : 0);
         return result;
     }
+
+    public Object getEmail() {
+        return email;
+    }
 }
