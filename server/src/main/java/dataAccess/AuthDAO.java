@@ -3,7 +3,7 @@ import java.util.*;
 import model.AuthData;
 public interface AuthDAO {
 
-    public boolean findAuth(String authToken);
+    public boolean findAuth(String authToken) throws DataAccessException;
 
 
 

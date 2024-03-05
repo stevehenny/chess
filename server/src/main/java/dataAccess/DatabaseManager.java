@@ -71,32 +71,35 @@ public class DatabaseManager {
     private static final String[] createStatements = {
         "CREATE TABLE IF NOT EXISTS Users (" +
             "username VARCHAR(255) PRIMARY KEY," +
-            "password VARCHAR(255) NOT NULL" +
+            "password VARCHAR(255) NOT NULL," +
                 "email VARCHAR(255) NOT NULL" +
         ")",
         "CREATE TABLE IF NOT EXISTS Auth (" +
             "authToken VARCHAR(255) PRIMARY KEY," +
-            "username VARCHAR(255) NOT NULL," +
-            "FOREIGN KEY (username) REFERENCES Users(username)" +
-        ")",
+            "username VARCHAR(255) NOT NULL" +
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+
         "CREATE TABLE IF NOT EXISTS Games (" +
             "gameID INT PRIMARY KEY AUTO_INCREMENT," +
-            "gameName VARCHAR(255) NOT NULL" +
-        ")",
-        "CREATE TABLE IF NOT EXISTS GameUsers (" +
-            "gameID INT NOT NULL," +
-            "username VARCHAR(255) NOT NULL," +
-            "FOREIGN KEY (gameID) REFERENCES Games(gameID)," +
-            "FOREIGN KEY (username) REFERENCES Users(username)" +
-        ")"
+                "whiteUsername VARCHAR(255) NOT NULL," +
+                "blackUsername VARCHAR(255) NOT NULL," +
+                "gameName VARCHAR(255) NOT NULL," +
+                "game TEXT NOT NULL," +
+                "UNIQUE (gameName)" +
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+
     };
+
+    public static void main(String[] args) throws DataAccessException {
+        configureDatabase();
+    }
 
     /**
      * Configure the database.
      */
     static void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
-        try (var conn = getConnection()) {
+        try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
@@ -106,4 +109,5 @@ public class DatabaseManager {
             throw new DataAccessException(e.getMessage());
         }
     }
+
 }

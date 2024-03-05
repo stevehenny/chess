@@ -12,6 +12,7 @@ public class AuthDAOMem implements AuthDAO{
         authData = new ArrayList<AuthData>();
     }
 
+    @Override
     public boolean findAuth(String authToken) {
         for (AuthData auth : authData) {
             if (auth.getAuthToken().equals(authToken)) {
@@ -21,10 +22,12 @@ public class AuthDAOMem implements AuthDAO{
         return false;
     }
 
+    @Override
     public void createAuth(AuthData auth) throws DataAccessException {
         authData.add(auth);
     }
 
+    @Override
     public AuthData readAuth(String authToken) throws DataAccessException{
         for (AuthData auth : authData) {
             if (auth.getAuthToken().equals(authToken)) {
@@ -34,6 +37,7 @@ public class AuthDAOMem implements AuthDAO{
         return null;
     }
 
+    @Override
     public AuthData findAndDeleteAuth(String authToken) throws DataAccessException{
         for (AuthData auth : authData) {
             if (auth.getAuthToken().equals(authToken)) {
@@ -44,6 +48,7 @@ public class AuthDAOMem implements AuthDAO{
         return null;
     }
 
+    @Override
     public void deleteAuth() throws DataAccessException {
         authData.clear();
     }
