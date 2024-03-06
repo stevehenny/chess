@@ -72,15 +72,28 @@ public class AuthDAOsql implements  AuthDAO{
         }
     }
 
-    public AuthData findAndDeleteAuth(String authToken) throws DataErrorException{
-        var statement = "SELECT FROM Auth WHERE authToken = ?";
-        executeStatement(statement, authToken, null);
+    public void findAndDeleteAuth(String authToken) throws DataErrorException{
+        if(findAuth(authToken) == false){
+            throw new DataErrorException(401, "Error: AuthData not found");
+        }
 
-        return null;
+        var statement = "DELETE FROM Auth WHERE authToken = ?";
+
+        try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
+            if(authToken != null) {
+                stmt.setString(1, authToken);
+            }
+            stmt.executeUpdate();
+        }
+        catch(Exception e){
+            throw new DataErrorException(401, "Error encountered while deleting AuthData: " + statement);
+        }
+
+
     }
 
     public void deleteAuth() throws DataErrorException {
-        var statement = "DELETE FROM Auth";
+        var statement = "TRUNCATE TABLE Auth";
         executeStatement(statement, null, null);
     }
 }

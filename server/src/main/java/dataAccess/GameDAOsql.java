@@ -1,11 +1,14 @@
 package dataAccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static dataAccess.DatabaseManager.configureDatabase;
+import static java.sql.Types.NULL;
 
 public class GameDAOsql implements GameDAO{
     public GameDAOsql() throws DataErrorException{
@@ -13,36 +16,39 @@ public class GameDAOsql implements GameDAO{
     }
 
     public void createGame(GameData game) throws DataErrorException {
-        var statement = "INSERT INTO Games (gameID, gameName, whiteUsername, blackUsername, game) VALUES (?, ?, ?, ?, ?)";
+        var statement = "INSERT INTO Games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         var gameID = game.getGameID();
         var gameName = game.getGameName();
         var whiteUsername = game.getWhitePlayer();
         var blackUsername = game.getBlackPlayer();
-        var gameData = game.getGame();
-        int result = executeStatement(statement, gameID, gameName, whiteUsername, blackUsername, gameData);
-        if (result != 1) {
-            throw new DataErrorException(500, "Failed to insert GameData");
-        }
+        ChessGame chessGame = game.getGame();
+        Gson chess = new Gson();
+        String gameData = chess.toJson(chessGame);
+        executeStatement(statement, gameID, gameName, whiteUsername, blackUsername, gameData);
+
     }
 
-    private int executeStatement(String statement, int gameID, String gameName, String whiteUsername, String blackUsername, Object gameData) throws DataErrorException {
+    private void executeStatement(String statement, int gameID, String gameName, String whiteUsername, String blackUsername, String gameData) throws DataErrorException {
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
-            if(gameID != 0) {
+            if(gameID >= 0) {
                 stmt.setInt(1, gameID);
             }
             if(gameName != null) {
-                stmt.setString(2, gameName);
+                stmt.setString(4, gameName);
             }
             if(whiteUsername != null) {
-                stmt.setString(3, whiteUsername);
+                stmt.setString(2, whiteUsername);
             }
+            else stmt.setNull(2, NULL);
             if(blackUsername != null) {
-                stmt.setString(4, blackUsername);
+                stmt.setString(3, blackUsername);
             }
+            else stmt.setNull(3, NULL);
             if(gameData != null) {
-                stmt.setObject(5, gameData);
+                stmt.setString(5, gameData);
             }
-            return stmt.executeUpdate();
+
+            stmt.executeUpdate();
         }
         catch(Exception e){
             throw new DataErrorException(500,"Error encountered while executing SQL statement: " + statement);
@@ -50,11 +56,15 @@ public class GameDAOsql implements GameDAO{
     }
 
     public void deleteGame() throws DataAccessException, DataErrorException {
-        var statement = "DELETE FROM Games";
-        int result = executeStatement(statement, 0, null, null, null, null);
-        if (result < 0) {
-            throw new DataErrorException(500, "Failed to delete GameData");
+        var statement = "TRUNCATE TABLE Games";
+        try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
+            stmt.executeUpdate();
         }
+        catch(Exception e){
+            throw new DataErrorException(500, "Error encountered while deleting GameData: " + statement);
+        }
+
+
     }
 
     public boolean findGame(String gameName) throws DataErrorException {
@@ -75,20 +85,20 @@ public class GameDAOsql implements GameDAO{
             stmt.setInt(1, gameID);
             var rs = stmt.executeQuery();
             if(rs.next()){
-                var game = rs.getString("gameName");
                 var whitePlayer = rs.getString("whiteUsername");
                 var blackPlayer = rs.getString("blackUsername");
-                GameData gameData = new GameData(game);
-                gameData.setGameID(gameID);
-                gameData.setWhitePlayer(whitePlayer);
-                gameData.setBlackPlayer(blackPlayer);
-                return gameData;
+                var gameName = rs.getString("gameName");
+                var game = rs.getString("game");
+                Gson gson = new Gson();
+                ChessGame chessGame = gson.fromJson(game, ChessGame.class);
+                return new GameData(gameID,gameName, chessGame, whitePlayer, blackPlayer);
             }
-            return null;
+
         }
         catch(Exception e){
             throw new DataErrorException(500, "Error encountered while finding GameData: " + statement);
         }
+        return null;
     }
     public Collection<GameData> listGames() throws DataErrorException {
         var statement = "SELECT * FROM Games";
@@ -97,14 +107,13 @@ public class GameDAOsql implements GameDAO{
             Collection<GameData> games = new ArrayList<GameData>();
             while(rs.next()){
                 var gameID = rs.getInt("gameID");
-                var game = rs.getString("gameName");
+                var game = rs.getString("game");
                 var whitePlayer = rs.getString("whiteUsername");
                 var blackPlayer = rs.getString("blackUsername");
-                GameData gameData = new GameData(game);
-                gameData.setGameID(gameID);
-                gameData.setWhitePlayer(whitePlayer);
-                gameData.setBlackPlayer(blackPlayer);
-                games.add(gameData);
+                var gameName = rs.getString("gameName");
+                Gson gson = new Gson();
+                ChessGame chessGame = gson.fromJson(game, ChessGame.class);
+                games.add(new GameData(gameID,whitePlayer, chessGame, gameName, blackPlayer));
             }
             return games;
         }

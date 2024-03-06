@@ -38,14 +38,12 @@ public class AuthDAOMem implements AuthDAO{
     }
 
     @Override
-    public AuthData findAndDeleteAuth(String authToken) throws DataAccessException{
+    public void findAndDeleteAuth(String authToken) throws DataAccessException{
         for (AuthData auth : authData) {
             if (auth.getAuthToken().equals(authToken)) {
                 authData.remove(auth);
-                return auth;
             }
         }
-        return null;
     }
 
     @Override

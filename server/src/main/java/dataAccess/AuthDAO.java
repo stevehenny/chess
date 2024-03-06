@@ -11,7 +11,7 @@ public interface AuthDAO {
 
     public AuthData readAuth(String authToken) throws DataAccessException, DataErrorException;
 
-    public AuthData findAndDeleteAuth(String authToken) throws DataAccessException, DataErrorException;
+    public void findAndDeleteAuth(String authToken) throws DataAccessException, DataErrorException;
 
     public void deleteAuth() throws DataAccessException, DataErrorException;
 }

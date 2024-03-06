@@ -118,10 +118,9 @@ public class GameService {
      */
     public void logout(String request) throws DataErrorException, DataAccessException {
         //check if user is logged in
-        if (authDAO.findAndDeleteAuth(request) == null) {
-            throw new DataErrorException(401, "Error: User not logged in");
+        authDAO.findAndDeleteAuth(request);
         }
-    }
+
 
     /**
      * Lists all games

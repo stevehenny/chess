@@ -142,7 +142,6 @@ public class Server {
      */
     public Object logout (Request request, Response response) throws DataAccessException {
         try {
-            AuthData auth = new AuthData();
             gameService.logout(request.headers("Authorization"));
             return "";
         }

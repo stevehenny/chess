@@ -17,13 +17,10 @@ public class UserDAOsql implements UserDAO{
         var username = user.getUsername();
         var password = user.getPassword();
         var email = user.getEmail();
-        int result = executeStatement(statement, username, password, email);
-        if (result != 1) {
-            throw new DataErrorException(500, "Failed to insert UserData" + statement);
-        }
+        executeStatement(statement, username, password, email);
     }
 
-    private int executeStatement(String statement, String username, String password, Object email) throws DataErrorException {
+    private void executeStatement(String statement, String username, String password, Object email) throws DataErrorException {
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             if(username != null) {
                 stmt.setString(1, username);
@@ -34,7 +31,7 @@ public class UserDAOsql implements UserDAO{
             if(email != null) {
                 stmt.setString(3, (String) email);
             }
-            return stmt.executeUpdate();
+            stmt.executeUpdate();
         }
         catch(Exception e){
         throw new DataErrorException(500, "Error encountered while executing SQL statement: " + statement);

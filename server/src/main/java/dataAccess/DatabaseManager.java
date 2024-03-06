@@ -80,9 +80,9 @@ public class DatabaseManager {
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
 
         "CREATE TABLE IF NOT EXISTS Games (" +
-            "gameID INT PRIMARY KEY AUTO_INCREMENT," +
-                "whiteUsername VARCHAR(255) NOT NULL," +
-                "blackUsername VARCHAR(255) NOT NULL," +
+            "gameID INT NOT NULL PRIMARY KEY AUTO_INCREMENT," +
+                "whiteUsername VARCHAR(255)," +
+                "blackUsername VARCHAR(255)," +
                 "gameName VARCHAR(255) NOT NULL," +
                 "game TEXT NOT NULL," +
                 "UNIQUE (gameName)" +
