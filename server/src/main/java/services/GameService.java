@@ -194,9 +194,8 @@ public class GameService {
             throw new DataErrorException(401, "Error: Unauthorized join game");
         }
         //check if game exists
-        GameData game = gameDAO.getGame(gameRequest.getGameID());
-        if(game.getBlackPlayer() != null && game.getWhitePlayer() != null){
-            throw new DataErrorException(403, "Error: Game is full");
+        if(gameDAO.getGame(gameRequest.getGameID())== null){
+            throw new DataErrorException(401, "Error: Game does not exist");
         }
         //check if color is null or empty
         if (gameRequest.getColor() == null || gameRequest.getColor().equals("")){
@@ -204,7 +203,7 @@ public class GameService {
             return joinGameResult;
         }
         //check if color is white and white player is null
-        if (gameRequest.getColor().equals("WHITE") && game.getWhitePlayer() == null){
+        if (gameRequest.getColor().equals("WHITE") && gameDAO.getGame(gameRequest.getGameID()).getWhitePlayer() == null){
             GameData gameData = gameDAO.getGame(gameRequest.getGameID());
             gameData.setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
             gameDAO.joinGame(gameData);
@@ -212,7 +211,7 @@ public class GameService {
             return joinGameResult;
         }
         //check if color is black and black player is null
-        else if (gameRequest.getColor().equals("BLACK") && game.getBlackPlayer() == null){
+        else if (gameRequest.getColor().equals("BLACK") && gameDAO.getGame(gameRequest.getGameID()).getBlackPlayer() == null){
             GameData gameData = gameDAO.getGame(gameRequest.getGameID());
             gameData.setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
             gameDAO.joinGame(gameData);

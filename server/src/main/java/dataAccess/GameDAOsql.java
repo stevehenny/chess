@@ -119,7 +119,7 @@ public class GameDAOsql implements GameDAO{
                 var gameName = rs.getString("gameName");
                 Gson gson = new Gson();
                 ChessGame chessGame = gson.fromJson(game, ChessGame.class);
-                games.add(new GameData(gameID,whitePlayer, chessGame, gameName, blackPlayer));
+                games.add(new GameData(gameID,gameName, chessGame, whitePlayer, blackPlayer));
             }
             return games;
         }
@@ -130,24 +130,24 @@ public class GameDAOsql implements GameDAO{
 
     @Override
     public void joinGame(GameData game) throws DataAccessException, DataErrorException {
-        var statement = "UPDATE Games Set blackUsername = ?, whiteUsername = ? WHERE gameID = ?";
+        var statement = "UPDATE Games SET blackUsername = ?, whiteUsername = ? WHERE gameID = ?";
         var gameID = game.getGameID();
 
-        if(getGame(gameID) == null){
+        if (getGame(gameID) == null) {
             throw new DataErrorException(401, "Error: Game does not exist");
         }
 
         var whiteUsername = game.getWhitePlayer();
         var blackUsername = game.getBlackPlayer();
 
-        try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
+        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)) {
             stmt.setString(1, blackUsername);
             stmt.setString(2, whiteUsername);
             stmt.setInt(3, gameID);
             stmt.executeUpdate();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             throw new DataErrorException(500, "Error encountered while joining GameData: " + statement);
         }
     }
+
 }
