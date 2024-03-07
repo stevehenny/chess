@@ -79,7 +79,7 @@ public class serviceTests {
         try {
             gameService.logout(authToken);
         } catch (DataErrorException e) {
-            assertTrue(e.getMessage().contains("Error: User not logged in"));
+            assertTrue(e.getMessage().contains("Error: AuthData not found"));
         }
     }
 
