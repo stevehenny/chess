@@ -202,20 +202,24 @@ public class GameService {
             JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken(), null, null);
             return joinGameResult;
         }
+        if(gameDAO.getGame(gameRequest.getGameID()).getBlackPlayer() != null && gameDAO.getGame(gameRequest.getGameID()).getWhitePlayer() != null){
+            throw new DataErrorException(403, "Error: already taken");
+        }
+
         //check if color is white and white player is null
         if (gameRequest.getColor().equals("WHITE") && gameDAO.getGame(gameRequest.getGameID()).getWhitePlayer() == null){
             GameData gameData = gameDAO.getGame(gameRequest.getGameID());
             gameData.setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
             gameDAO.joinGame(gameData);
-            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken()  , "WHITE", null);
+            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken()  , "white", null);
             return joinGameResult;
         }
         //check if color is black and black player is null
         else if (gameRequest.getColor().equals("BLACK") && gameDAO.getGame(gameRequest.getGameID()).getBlackPlayer() == null){
             GameData gameData = gameDAO.getGame(gameRequest.getGameID());
-            gameData.setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
+            gameData.setBlackPlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
             gameDAO.joinGame(gameData);
-            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken()  , "BLACK", null);
+            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken()  , "black", null);
             return joinGameResult;
         }
         //if color is not white or black
