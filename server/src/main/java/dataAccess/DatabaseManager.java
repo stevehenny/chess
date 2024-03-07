@@ -80,13 +80,13 @@ public class DatabaseManager {
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
 
         "CREATE TABLE IF NOT EXISTS Games (" +
-            "gameID INT NOT NULL PRIMARY KEY AUTO_INCREMENT," +
+            "gameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY," +
                 "whiteUsername VARCHAR(255)," +
                 "blackUsername VARCHAR(255)," +
                 "gameName VARCHAR(255) NOT NULL," +
                 "game TEXT NOT NULL," +
                 "UNIQUE (gameName)" +
-        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
 
     };
 

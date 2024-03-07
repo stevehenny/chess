@@ -15,6 +15,7 @@ public class GameDAOsql implements GameDAO{
         configureDatabase();
     }
 
+    @Override
     public void createGame(GameData game) throws DataErrorException {
         var statement = "INSERT INTO Games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         var gameID = game.getGameID();
@@ -47,6 +48,7 @@ public class GameDAOsql implements GameDAO{
             if(gameData != null) {
                 stmt.setString(5, gameData);
             }
+            else stmt.setNull(5, NULL);
 
             stmt.executeUpdate();
         }
@@ -55,6 +57,7 @@ public class GameDAOsql implements GameDAO{
         }
     }
 
+    @Override
     public void deleteGame() throws DataAccessException, DataErrorException {
         var statement = "TRUNCATE TABLE Games";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
@@ -67,8 +70,9 @@ public class GameDAOsql implements GameDAO{
 
     }
 
+    @Override
     public boolean findGame(String gameName) throws DataErrorException {
-        var statement = "SELECT * FROM games WHERE gameName = ?";
+        var statement = "SELECT * FROM Games WHERE gameName = ?";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
             stmt.setString(1, gameName);
             var rs = stmt.executeQuery();
@@ -79,6 +83,7 @@ public class GameDAOsql implements GameDAO{
         }
     }
 
+    @Override
     public GameData getGame(int gameID) throws DataErrorException {
         var statement = "SELECT * FROM Games WHERE gameID = ?";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
@@ -100,6 +105,7 @@ public class GameDAOsql implements GameDAO{
         }
         return null;
     }
+    @Override
     public Collection<GameData> listGames() throws DataErrorException {
         var statement = "SELECT * FROM Games";
         try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
@@ -119,6 +125,29 @@ public class GameDAOsql implements GameDAO{
         }
         catch(Exception e){
             throw new DataErrorException(500, "Error encountered while listing GameData: " + statement);
+        }
+    }
+
+    @Override
+    public void joinGame(GameData game) throws DataAccessException, DataErrorException {
+        var statement = "UPDATE Games Set blackUsername = ?, whiteUsername = ? WHERE gameID = ?";
+        var gameID = game.getGameID();
+
+        if(getGame(gameID) == null){
+            throw new DataErrorException(401, "Error: Game does not exist");
+        }
+
+        var whiteUsername = game.getWhitePlayer();
+        var blackUsername = game.getBlackPlayer();
+
+        try(var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(statement)){
+            stmt.setString(1, blackUsername);
+            stmt.setString(2, whiteUsername);
+            stmt.setInt(3, gameID);
+            stmt.executeUpdate();
+        }
+        catch(Exception e){
+            throw new DataErrorException(500, "Error encountered while joining GameData: " + statement);
         }
     }
 }

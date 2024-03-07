@@ -11,4 +11,6 @@ public interface GameDAO {
 
     public GameData getGame(int gameID) throws DataAccessException, DataErrorException;
     public Collection<GameData> listGames() throws DataAccessException, DataErrorException;
+
+    public void joinGame(GameData game) throws DataAccessException, DataErrorException;
 }

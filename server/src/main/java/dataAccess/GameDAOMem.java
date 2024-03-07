@@ -45,4 +45,13 @@ public class GameDAOMem implements GameDAO{
     public Collection<GameData> listGames() throws DataAccessException {
         return gameData;
     }
+    @Override
+    public void joinGame(GameData game) throws DataAccessException {
+        for (GameData g : gameData) {
+            if (g.getGameID() == game.getGameID()) {
+                g.setBlackPlayer(game.getBlackPlayer());
+                g.setWhitePlayer(game.getWhitePlayer());
+            }
+        }
+    }
 }

@@ -164,14 +164,14 @@ public class GameService {
             throw new DataErrorException(401, "Error: Unauthorized creation of game");
         }
 
-        GameData game = new GameData(gameRequest.getGameName());
-        gameDAO.createGame(game);
 
+        GameData game = new GameData(gameRequest.getGameName());
         int gameID = ThreadLocalRandom.current().nextInt();
-        while(gameID <= 0){
+        while(gameID <= 0) {
             gameID = ThreadLocalRandom.current().nextInt();
         }
         game.setGameID(gameID);
+        gameDAO.createGame(game);
 
         CreateGameResult createGameResult = new CreateGameResult(game.getGameID());
         return createGameResult;
@@ -200,19 +200,23 @@ public class GameService {
         }
         //check if color is null or empty
         if (gameRequest.getColor() == null || gameRequest.getColor().equals("")){
-            JoinGameResult joinGameResult = new JoinGameResult(game.getGameID(), game.getGameName(), null, null);
+            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken(), null, null);
             return joinGameResult;
         }
         //check if color is white and white player is null
         if (gameRequest.getColor().equals("WHITE") && game.getWhitePlayer() == null){
-            gameDAO.getGame(gameRequest.getGameID()).setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
-            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken(), "WHITE", null);
+            GameData gameData = gameDAO.getGame(gameRequest.getGameID());
+            gameData.setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
+            gameDAO.joinGame(gameData);
+            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken()  , "WHITE", null);
             return joinGameResult;
         }
         //check if color is black and black player is null
         else if (gameRequest.getColor().equals("BLACK") && game.getBlackPlayer() == null){
-            gameDAO.getGame(gameRequest.getGameID()).setBlackPlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
-            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken(), "BLACK", null);
+            GameData gameData = gameDAO.getGame(gameRequest.getGameID());
+            gameData.setWhitePlayer(authDAO.readAuth(gameRequest.getAuthToken()).getUsername());
+            gameDAO.joinGame(gameData);
+            JoinGameResult joinGameResult = new JoinGameResult(gameRequest.getGameID(), gameRequest.getAuthToken()  , "BLACK", null);
             return joinGameResult;
         }
         //if color is not white or black
