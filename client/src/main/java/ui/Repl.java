@@ -29,7 +29,17 @@ public class Repl {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
-        printWhitePerspective(out, new String[8][8]);
+        String[][] board = new String[8][8];
+        String afterSpacing = "\u2001\u2005";
+        String beforeSpacing = "\u2006";
+        board[0] = new String[]{beforeSpacing+"R"+afterSpacing, beforeSpacing+"N"+afterSpacing, beforeSpacing+"B"+afterSpacing, beforeSpacing+"Q"+afterSpacing, beforeSpacing+"K"+afterSpacing, beforeSpacing+"B"+afterSpacing, beforeSpacing+"N"+afterSpacing, beforeSpacing+"R"+afterSpacing};
+        board[1] = new String[]{beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing};
+        for (int i = 2; i < 6; i++) {
+            board[i] = new String[]{beforeSpacing+" "+afterSpacing, beforeSpacing+" "+afterSpacing, beforeSpacing+" "+afterSpacing, beforeSpacing+" "+afterSpacing, beforeSpacing+" "+afterSpacing, beforeSpacing+" "+afterSpacing, beforeSpacing+" "+afterSpacing, beforeSpacing+" "+afterSpacing};
+        }
+        board[6] = new String[]{beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing, beforeSpacing+"P"+afterSpacing};
+        board[7] = new String[]{beforeSpacing+"R"+afterSpacing, beforeSpacing+"N"+afterSpacing, beforeSpacing+"B"+afterSpacing, beforeSpacing+"Q"+afterSpacing, beforeSpacing+"K"+afterSpacing, beforeSpacing+"B"+afterSpacing, beforeSpacing+"N"+afterSpacing, beforeSpacing+"R"+afterSpacing};
+        printWhitePerspective(out, board);
 
 
         System.out.println("Welcome to Chess!");
@@ -58,7 +68,7 @@ public class Repl {
     }
 
     public void printTopRow(PrintStream out) {
-        out.print(moveCursorToLocation(1, 1));
+
         out.print("   ");
         setGreySquare(out);
         String spacing = "\u2001\u2005";
@@ -66,6 +76,8 @@ public class Repl {
         for (int i = 0; i < BOARD_SIZE_IN_SQUARES; i++) {
             out.print(" " + (char) ('a' + i) + spacing);
         }
+        out.print( EMPTY + ' ');
+        out.print(SET_BG_COLOR_BLACK);
         out.print("\n");
     }
 
@@ -85,12 +97,20 @@ public class Repl {
                 } else {
                     out.print(SET_BG_COLOR_BLACK);
                 }
+                out.print(SET_TEXT_COLOR_BLUE);
+                if (i >=6){
+                    out.print(SET_TEXT_COLOR_RED);
+                }
                 out.print(board[i][j]);
             }
+            out.print(SET_TEXT_COLOR_BLACK);
             out.print(SET_BG_COLOR_LIGHT_GREY + rowLabels[i]);
             out.print(SET_BG_COLOR_BLACK + EMPTY);
             out.print("\n");
         }
+    printTopRow(out);
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_WHITE);
     }
 
     public void setGreySquare(PrintStream out) {
@@ -98,6 +118,7 @@ public class Repl {
         out.print(SET_TEXT_COLOR_BLACK);
     }
 
+//    public print
 
     public static void main(String[] args) {
         var serverUrl = "http://localhost:8080";
