@@ -1,7 +1,9 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.Collection;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 import server.Server;
@@ -50,12 +52,12 @@ public class ChessClient {
             } else {
                 return switch (cmd) {
                     case "help" -> help();
-                    case "createGame" -> createGame(params);
-                    case "joinGame" -> joinGame(params);
-                    case "joinObserver" -> joinObserver(params);
-                    case "quit" -> "quit";
+                    case "creategame" -> createGame(params);
+                    case "joingame" -> joinGame(params);
+                    case "joinobserver" -> joinObserver(params);
+                    case "quit" -> quit();
                     case "logout" -> logout();
-                    case "listGames" -> listGames();
+                    case "listgames" -> listGames();
                     default -> help();
                 };
             }
@@ -109,6 +111,11 @@ public class ChessClient {
         }
     }
 
+    public String quit() {
+        System.exit(0);
+        return "Quitting\n";
+    }
+
     public String createGame(String[] params) throws ResponseException{
         try {
             if (params.length != 1) {
@@ -119,43 +126,49 @@ public class ChessClient {
             return "Game created";
         }
         catch (ResponseException e) {
-            return e.getMessage();
+            return "Error" + e.getMessage();
         }
     }
 
-    public String joinGame(String[] params) {
-        try {
-            if (params.length != 2) {
-                return "Usage: joinGame <gameId> <color>";
-            }
-            var gameId = params[0];
-            var color = params[1];
-            server.joinGame(gameId, color);
-            return "Game joined";
-        }
-        catch (ResponseException e) {
-            return e.getMessage();
-        }
-    }
-
-    public String joinObserver(String[] params) {
+    public String joinObserver(String[] params) throws ResponseException {
         try {
             if (params.length != 1) {
-                return "Usage: joinObserver <gameId>";
+                return "Error: bad request";
             }
-            var gameId = params[0];
-            server.joinGame(gameId, null);
-            return "Observer joined";
+            var gameIDString = params[0];
+            var gameID = Integer.parseInt(gameIDString);
+            server.joinObserver(gameID);
+            return "Success: joined observer";
+        } catch (ResponseException e) {
+            return "Error: " + e.getMessage();
         }
-        catch (ResponseException e) {
-            return e.getMessage();
+    }
+
+    public String joinGame(String[] params) throws ResponseException {
+        try {
+            if (params.length != 2) {
+                return "Error: bad request";
+            }
+            var gameIDString = params[0];
+            var gameID = Integer.parseInt(gameIDString);
+            var playerColor = params[1];
+            playerColor = playerColor.toUpperCase();
+            server.joinGame(gameID, playerColor);
+            return "Success: joined game";
+        } catch (ResponseException e) {
+            return "Error: " + e.getMessage();
         }
     }
 
     public String listGames() {
         try {
             var games = server.listGames();
-            return games.toString();
+            var result = new StringBuilder();
+            var gson = new Gson();
+            for(var game : games) {
+                result.append(gson.toJson(game)).append("\n");
+            }
+            return result.toString();
         }
         catch (ResponseException e) {
             return e.getMessage();

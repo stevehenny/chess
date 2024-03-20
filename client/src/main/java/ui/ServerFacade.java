@@ -8,6 +8,8 @@ import java.io.*;
 import java.net.*;
 import java.util.Arrays;
 import java.net.HttpURLConnection;
+import java.util.Collection;
+import java.util.Objects;
 
 public class ServerFacade {
     private String serverUrl;
@@ -35,28 +37,25 @@ public class ServerFacade {
 
     public void createGame(String gameName) throws ResponseException {
         var path = "/game";
-        var request = new CreateGameRequest(gameName, authToken);
-        this.makeRequest("POST", path, request, CreateGameResult.class);
+        this.makeRequest("POST", path,  new CreateGameRequest(gameName, authToken), CreateGameResult.class);
     }
 
-    public void joinGame(String gameId, String color) throws ResponseException {
-        var path = "/game/";
-        int gameID = Integer.parseInt(gameId);
-        String requestColor = color;
-        if(color.equals("null")){
-            requestColor = null;
-        }
-        var request = new JoinGameRequest(gameID, authToken, requestColor);
-        this.makeRequest("PUT", path, request, JoinGameResult.class);
+    public void joinObserver(int gameId) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("PUT", path, new JoinGameRequest(gameId, authToken, null), JoinGameResult.class);
+    }
+
+    public void joinGame(int gameId, String playerColor) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("PUT", path, new JoinGameRequest(gameId, authToken, playerColor), JoinGameResult.class);
+
     }
 
 
-    public Object listGames() throws ResponseException{
-        try {
-            return this.makeRequest("GET", "/game", null, ListGameResult.class);
-        } catch (ResponseException e) {
-            return e;
-        }
+    public Collection listGames() throws ResponseException{
+       var path = "/game";
+       ListGameResult result = this.makeRequest("GET", path, new ListGameRequest(authToken), ListGameResult.class);
+         return result.getGames();
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -69,8 +68,15 @@ public class ServerFacade {
             if(authToken != null) {
                 http.addRequestProperty("Authorization", authToken);
             }
-            http.setDoOutput(true);
-            writeBody(request, http);
+
+            if(Objects.equals(method, "GET")) {
+                http.setDoOutput(false);
+            }
+            else {
+                http.setDoOutput(true);
+                writeBody(request, http);
+            }
+
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);

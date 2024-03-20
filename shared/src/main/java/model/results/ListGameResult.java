@@ -10,4 +10,8 @@ public class ListGameResult {
         this.games = games;
     }
 
+    public Collection<GameData> getGames() {
+        return games;
+    }
+
 }
