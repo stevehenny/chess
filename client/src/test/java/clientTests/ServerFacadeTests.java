@@ -118,11 +118,56 @@ public class ServerFacadeTests {
     }
     @Test
     public void joinGameNegative() throws ResponseException {
-        serverFacade.register("user10", "password", "email");
-        serverFacade.login("user10", "password");
-        serverFacade.createGame("game5");
-        serverFacade.logout();
-        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(1, "white"));
+        serverFacade.register("user11", "password", "email");
+        serverFacade.login("user11", "password");
+        serverFacade.createGame("game6");
+        Collection<GameData> games = serverFacade.listGames();
+        if(games.contains("game6")){
+            for(GameData game : games){
+                if(game.getGameName().equals("game6")){
+                    serverFacade.logout();
+                    Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(game.getGameID(), "none"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void joinObserverPositive() throws ResponseException {
+        serverFacade.register("user12", "password", "email");
+        serverFacade.login("user12", "password");
+        serverFacade.createGame("game7");
+        Collection<GameData> games = serverFacade.listGames();
+        if(games.contains("game7")){
+            for(GameData game : games){
+                if(game.getGameName().equals("game7")){
+                    Assertions.assertDoesNotThrow(() -> serverFacade.joinObserver(game.getGameID()));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void joinObserverNegative() throws ResponseException {
+        serverFacade.register("user13", "password", "email");
+        serverFacade.login("user13", "password");
+        serverFacade.createGame("game8");
+        Collection<GameData> games = serverFacade.listGames();
+        if(games.contains("game8")){
+            for(GameData game : games){
+                if(game.getGameName().equals("game8")){
+                    serverFacade.logout();
+                    Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinObserver(game.getGameID()));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testClear() throws ResponseException {
+        serverFacade.register("user14", "password", "email");
+        serverFacade.clear();
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.login("user14", "password"));
     }
 
 }
