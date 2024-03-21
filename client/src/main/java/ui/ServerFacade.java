@@ -125,4 +125,8 @@ public class ServerFacade {
         var path = "/db";
         return this.makeRequest("DELETE", path, null, null);
     }
+
+    public String getAuthToken() {
+        return authToken;
+    }
 }
