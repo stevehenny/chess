@@ -13,9 +13,12 @@ public class ChessClient {
     private final ServerFacade server;
     private ClientState state;
 
+    private PrintBoard printBoard;
+
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         state = ClientState.SIGNED_OUT;
+        printBoard = new PrintBoard();
     }
 
     public String help() {
@@ -138,6 +141,7 @@ public class ChessClient {
             var gameIDString = params[0];
             var gameID = Integer.parseInt(gameIDString);
             server.joinObserver(gameID);
+            printBoard.printBoards();
             return "Success: joined observer";
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
@@ -154,6 +158,7 @@ public class ChessClient {
             var playerColor = params[1];
             playerColor = playerColor.toUpperCase();
             server.joinGame(gameID, playerColor);
+            printBoard.printBoards();
             return "Success: joined game";
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();

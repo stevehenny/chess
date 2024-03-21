@@ -14,8 +14,9 @@ import java.util.Objects;
 public class ServerFacade {
     private String serverUrl;
     static String authToken = null;
+
     public ServerFacade(String serverUrl) {
-           this.serverUrl = serverUrl;
+        this.serverUrl = serverUrl;
     }
 
     public void login(String username, String password) throws ResponseException {
@@ -37,7 +38,7 @@ public class ServerFacade {
 
     public void createGame(String gameName) throws ResponseException {
         var path = "/game";
-        this.makeRequest("POST", path,  new CreateGameRequest(gameName, authToken), CreateGameResult.class);
+        this.makeRequest("POST", path, new CreateGameRequest(gameName, authToken), CreateGameResult.class);
     }
 
     public void joinObserver(int gameId) throws ResponseException {
@@ -52,10 +53,10 @@ public class ServerFacade {
     }
 
 
-    public Collection listGames() throws ResponseException{
-       var path = "/game";
-       ListGameResult result = this.makeRequest("GET", path, new ListGameRequest(authToken), ListGameResult.class);
-         return result.getGames();
+    public Collection listGames() throws ResponseException {
+        var path = "/game";
+        ListGameResult result = this.makeRequest("GET", path, new ListGameRequest(authToken), ListGameResult.class);
+        return result.getGames();
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -65,14 +66,13 @@ public class ServerFacade {
             http.setRequestMethod(method);
 
 
-            if(authToken != null) {
+            if (authToken != null) {
                 http.addRequestProperty("Authorization", authToken);
             }
 
-            if(Objects.equals(method, "GET")) {
+            if (Objects.equals(method, "GET")) {
                 http.setDoOutput(false);
-            }
-            else {
+            } else {
                 http.setDoOutput(true);
                 writeBody(request, http);
             }
@@ -121,5 +121,8 @@ public class ServerFacade {
         return status / 100 == 2;
     }
 
-
+    public String clear() throws ResponseException {
+        var path = "/db";
+        return this.makeRequest("DELETE", path, null, null);
+    }
 }
