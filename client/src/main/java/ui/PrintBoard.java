@@ -1,5 +1,8 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
@@ -17,7 +20,7 @@ public class PrintBoard {
     }
 
 
-    public void printBoards() {
+    public void printBoards(String playerColor, ChessBoard game) {
         String[][] board = new String[8][8];
         String afterSpacing = "\u2001\u2005";
         String beforeSpacing = "\u2006";

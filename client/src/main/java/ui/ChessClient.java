@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.google.gson.Gson;
+import dataAccess.GameDAO;
+import dataAccess.GameDAOsql;
 import exception.ResponseException;
 import model.*;
 import server.Server;
@@ -14,6 +16,7 @@ public class ChessClient {
     private final ServerFacade server;
     private ClientState state;
 
+    private GameData myGame;
     private PrintBoard printBoard;
 
     private String playerColorGlobal;
@@ -101,10 +104,7 @@ public class ChessClient {
         return line;
     }
 
-    public String redraw() {
-        if ()
-        return "";
-    }
+
 
 
     public String register(String[] params) throws ResponseException {
@@ -176,20 +176,26 @@ public class ChessClient {
             if (params.length != 1) {
                 return "Error: bad request";
             }
+
             var gameIDString = params[0];
             var gameInd = Integer.parseInt(gameIDString);
             int index = 0;
-            int gameId = 0;
+
+
             Collection<GameData> games = server.listGames();
+            if(gameInd >= games.size() || gameInd < 0){
+                return "Error: game does not exist";
+            }
             for (GameData game : games) {
                 if (index == gameInd) {
-                    gameId = game.getGameID();
+                    myGame = game;
                     break;
                 }
                 index++;
             }
-            server.joinObserver(gameId);
-            printBoard.printBoards();
+
+            server.joinObserver(myGame.getGameID());
+            printBoard.printBoards("All", myGame.getGame().getBoard());
             state = ClientState.GAMEPLAY;
             return "Success: joined observer";
         } catch (ResponseException e) {
@@ -206,18 +212,20 @@ public class ChessClient {
             var gameInd = Integer.parseInt(gameIDString);
             var playerColor = params[1];
             Collection<GameData> games = server.listGames();
+            if(gameInd >= games.size() || gameInd < 0){
+                return "Error: game does not exist";
+            }
             int index = 0;
-            int gameId = 0;
             for (GameData game : games) {
                 if (index == gameInd) {
-                    gameId = game.getGameID();
+                    myGame = game;
                     break;
                 }
                 index++;
             }
             playerColor = playerColor.toUpperCase();
-            server.joinGame(gameId, playerColor);
-            printBoard.printBoards();
+            server.joinGame(myGame.getGameID(), playerColor);
+            printBoard.printBoards("All", myGame.getGame().getBoard());
             playerColorGlobal = playerColor;
             state = ClientState.GAMEPLAY;
             return "Success: joined game";
@@ -241,6 +249,40 @@ public class ChessClient {
         catch (ResponseException e) {
             return e.getMessage();
         }
+    }
+
+    public String redraw() {
+        if (playerColorGlobal.equals("WHITE")) {
+            printBoard.printBoards("WHITE", myGame.getGame().getBoard());
+            return "board redrawn";
+    }
+        else if (playerColorGlobal.equals("BLACK")) {
+            printBoard.printBoards("BLACK", myGame.getGame().getBoard());
+            return "board redrawn";
+        }
+        else{
+            return "Player not in game";
+        }
+    }
+
+    private String move(String[] params) {
+        return "";
+    }
+
+    private String highlightMoves(String[] params) {
+        return "";
+    }
+
+    private String resign() {
+        return "";
+    }
+
+    private String makeMove(String[] params) {
+        return "";
+    }
+
+    private String leaveGame() {
+        return "";
     }
 }
 
