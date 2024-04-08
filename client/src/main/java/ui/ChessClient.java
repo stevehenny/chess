@@ -16,6 +16,8 @@ public class ChessClient {
 
     private PrintBoard printBoard;
 
+    private String playerColorGlobal;
+
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         state = ClientState.SIGNED_OUT;
@@ -30,14 +32,28 @@ public class ChessClient {
                     - quit
                     """;
         }
-        return """
-                - listGames 
-                - createGame <gameName>
-                - joinGame <gameId> <color>
-                - joinObserver <gameId>
-                - logout
-                - quit
-                """;
+        else if (state == ClientState.SIGNED_IN) {
+            return """
+                    - listGames 
+                    - createGame <gameName>
+                    - joinGame <gameId> <color>
+                    - joinObserver <gameId>
+                    - logout
+                    - quit
+                    """;
+        }
+        else if (state == ClientState.GAMEPLAY) {
+            return """
+                    - leave
+                    - redraw
+                    - makeMove <from> <to>
+                    - resign
+                    - highlightMoves <from>
+                    - move <from> <to>
+                    - quit
+                    """;
+        }
+        return "Error: bad request";
     }
 
 
@@ -54,7 +70,7 @@ public class ChessClient {
                     case "quit" -> quit();
                     default -> help();
                 };
-            } else {
+            } else if (state == ClientState.SIGNED_IN){
                 return switch (cmd) {
                     case "help" -> help();
                     case "creategame" -> createGame(params);
@@ -66,9 +82,28 @@ public class ChessClient {
                     default -> help();
                 };
             }
+            else if (state == ClientState.GAMEPLAY) {
+                return switch (cmd) {
+                    case "help" -> help();
+                    case "leave" -> leaveGame();
+                    case "redraw" -> redraw();
+                    case "makemove" -> makeMove(params);
+                    case "resign" -> resign();
+                    case "highlightmoves" -> highlightMoves(params);
+                    case "move" -> move(params);
+                    case "quit" -> quit();
+                    default -> help();
+                };
+            }
         } catch (Exception | ResponseException e) {
             return e.getMessage();
         }
+        return line;
+    }
+
+    public String redraw() {
+        if ()
+        return "";
     }
 
 
@@ -155,6 +190,7 @@ public class ChessClient {
             }
             server.joinObserver(gameId);
             printBoard.printBoards();
+            state = ClientState.GAMEPLAY;
             return "Success: joined observer";
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
@@ -182,6 +218,8 @@ public class ChessClient {
             playerColor = playerColor.toUpperCase();
             server.joinGame(gameId, playerColor);
             printBoard.printBoards();
+            playerColorGlobal = playerColor;
+            state = ClientState.GAMEPLAY;
             return "Success: joined game";
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
