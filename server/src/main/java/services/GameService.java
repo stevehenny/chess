@@ -17,14 +17,12 @@ public class GameService {
     AuthDAO authDAO;
     GameDAO gameDAO;
 
-    public GameService()  {
-        try {
-            userDAO = new UserDAOsql();
-            authDAO = new AuthDAOsql();
-            gameDAO = new GameDAOsql();
-        } catch (DataErrorException e) {
-            throw new RuntimeException(e);
-        }
+    public GameService(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
+
+            this.userDAO = userDAO;
+            this.authDAO = authDAO;
+            this.gameDAO = gameDAO;
+
     }
     /**
      * Clears all data from the database
