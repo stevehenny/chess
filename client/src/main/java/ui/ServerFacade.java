@@ -1,5 +1,6 @@
 package ui;
 import exception.ResponseException;
+import model.GameData;
 import model.requests.*;
 import model.results.*;
 import server.Server;
@@ -53,7 +54,7 @@ public class ServerFacade {
     }
 
 
-    public Collection listGames() throws ResponseException {
+    public Collection<GameData> listGames() throws ResponseException {
         var path = "/game";
         ListGameResult result = this.makeRequest("GET", path, new ListGameRequest(authToken), ListGameResult.class);
         return result.getGames();

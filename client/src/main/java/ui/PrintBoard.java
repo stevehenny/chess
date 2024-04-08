@@ -73,7 +73,7 @@ public class PrintBoard {
             out.print("\n");
         }
         printTopRowWhite(out);
-        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
@@ -103,7 +103,7 @@ public class PrintBoard {
             out.print("\n");
         }
         printTopRowBlack(out);
-        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
     }
 

@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -50,6 +51,7 @@ public class ChessClient {
                     case "help" -> help();
                     case "login" -> login(params);
                     case "register" -> register(params);
+                    case "quit" -> quit();
                     default -> help();
                 };
             } else {
@@ -114,7 +116,8 @@ public class ChessClient {
         }
     }
 
-    public String quit() {
+    public String quit() throws ResponseException {
+//        server.clear();
         System.exit(0);
         return "Quitting\n";
     }
@@ -139,8 +142,18 @@ public class ChessClient {
                 return "Error: bad request";
             }
             var gameIDString = params[0];
-            var gameID = Integer.parseInt(gameIDString);
-            server.joinObserver(gameID);
+            var gameInd = Integer.parseInt(gameIDString);
+            int index = 0;
+            int gameId = 0;
+            Collection<GameData> games = server.listGames();
+            for (GameData game : games) {
+                if (index == gameInd) {
+                    gameId = game.getGameID();
+                    break;
+                }
+                index++;
+            }
+            server.joinObserver(gameId);
             printBoard.printBoards();
             return "Success: joined observer";
         } catch (ResponseException e) {
@@ -154,10 +167,20 @@ public class ChessClient {
                 return "Error: bad request";
             }
             var gameIDString = params[0];
-            var gameID = Integer.parseInt(gameIDString);
+            var gameInd = Integer.parseInt(gameIDString);
             var playerColor = params[1];
+            Collection<GameData> games = server.listGames();
+            int index = 0;
+            int gameId = 0;
+            for (GameData game : games) {
+                if (index == gameInd) {
+                    gameId = game.getGameID();
+                    break;
+                }
+                index++;
+            }
             playerColor = playerColor.toUpperCase();
-            server.joinGame(gameID, playerColor);
+            server.joinGame(gameId, playerColor);
             printBoard.printBoards();
             return "Success: joined game";
         } catch (ResponseException e) {
@@ -170,8 +193,10 @@ public class ChessClient {
             var games = server.listGames();
             var result = new StringBuilder();
             var gson = new Gson();
+            int index = 0;
             for(var game : games) {
-                result.append(gson.toJson(game)).append("\n");
+                result.append(index).append(gson.toJson(game)).append("\n");
+                index++;
             }
             return result.toString();
         }
