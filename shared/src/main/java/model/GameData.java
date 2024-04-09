@@ -19,7 +19,7 @@ public class GameData {
     public GameData(String gameName){
         this.gameName = gameName;
         this.gameID = 0;
-        this.game = null;
+        this.game = new ChessGame();
         this.whiteUsername = null;
         this.blackUsername = null;
     }

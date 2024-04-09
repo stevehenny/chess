@@ -7,6 +7,7 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
@@ -56,11 +57,41 @@ public class WebSocketHandler {
         try {
             if (authDAO.findAuth(command.getAuthString())) {
                 GameData game = gameDAO.getGame(command.getGameID());
-                LoadGameMessage message = new LoadGameMessage(game.getGame());
-                session.getRemote().sendString(new Gson().toJson(message));
-                Notification noti = new Notification("Player joined game");
-                connections.broadcast(command.getAuthString(), noti);
+                if (command.getPlayerColor() == null){
+                    Error error = new Error("Player color is null");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                }
+                else if(((command.getPlayerColor().equals("WHITE")) && game.getWhitePlayer() == null) && (authDAO.readAuth(command.getAuthString()).getUsername().equals(game.getWhitePlayer()))){
+                    Error error = new Error("Player color not specified");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                }
+                else if(((command.getPlayerColor().equals("BLACK")) && game.getBlackPlayer() == null) && (authDAO.readAuth(command.getAuthString()).getUsername().equals(game.getBlackPlayer()))){
+                    Error error = new Error("Player color not specified");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                }
+                else if(command.getPlayerColor().equals("WHITE")){
+                    game.setWhitePlayer(command.getAuthString());
+                    LoadGameMessage message = new LoadGameMessage(game.getGame());
+                    session.getRemote().sendString(new Gson().toJson(message));
+                    Notification notification = new Notification("Player joined game");
+                    connections.broadcast(command.getAuthString(), notification);
+
+                }
+                else{
+                    game.setBlackPlayer(command.getAuthString());
+                    LoadGameMessage message = new LoadGameMessage(game.getGame());
+                    session.getRemote().sendString(new Gson().toJson(message));
+                    Notification notification = new Notification("Player joined game");
+                    connections.broadcast(command.getAuthString(), notification);
+
+                }
+
             }
+            else{
+                Error error = new Error("Invalid auth token");
+                session.getRemote().sendString(new Gson().toJson(error));
+            }
+
         } catch (DataErrorException | DataAccessException e) {
             String error = new Gson().toJson(new Error(e.getMessage()));
             session.getRemote().sendString(error);
