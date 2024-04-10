@@ -128,6 +128,17 @@ public class GameDAOsql implements GameDAO{
         }
     }
 
+    public void overrideGame(GameData game) throws DataErrorException{
+        var statement = "UPDATE Games Set game = ? WHERE gameID = ?";
+        var gameID = game.getGameID();
+        var gameName = game.getGameName();
+        var whiteUsername = game.getWhitePlayer();
+        var blackUsername = game.getBlackPlayer();
+        ChessGame chessGame = game.getGame();
+        Gson chess = new Gson();
+        String gameData = chess.toJson(chessGame);
+        executeStatement(statement, gameID, gameName, whiteUsername, blackUsername, gameData);
+    }
     @Override
     public void joinGame(GameData game) throws DataAccessException, DataErrorException {
         var statement = "UPDATE Games SET blackUsername = ?, whiteUsername = ? WHERE gameID = ?";

@@ -11,9 +11,7 @@ import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinObserverCommand;
-import webSocketMessages.userCommands.JoinPlayerCommand;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 @WebSocket
@@ -46,17 +44,22 @@ public class WebSocketHandler {
 //                makeMove(command, session);
                 break;
             case LEAVE:
-//                leave(command, session);
+                LeaveGameCommand cmd3 = new Gson().fromJson(message, LeaveGameCommand.class);
+                leave(cmd3, session);
                 break;
             case RESIGN:
-//                resign(command, session);
+                ResignCommand cmd4 = new Gson().fromJson(message, ResignCommand.class);
+                resign(cmd4, session);
                 break;
             default:
 //                throw new ResponseException("Invalid command type");
         }
     }
 
-    public void joinPlayer(JoinPlayerCommand command, Session session) throws IOException {
+
+
+
+    private void joinPlayer(JoinPlayerCommand command, Session session) throws IOException {
         connections.add(command.getAuthString(), session);
         try {
             if (authDAO.findAuth(command.getAuthString()) && (gameDAO.getGame(command.getGameID()) != null)) {
@@ -77,7 +80,7 @@ public class WebSocketHandler {
                     }
 
                 } else {
-                    if ((game.getBlackPlayer() == null) || (authDAO.readAuth(command.getAuthString()).getUsername().equals(game.getBlackPlayer()))) {
+                    if ((game.getBlackPlayer() == null) || !(authDAO.readAuth(command.getAuthString()).getUsername().equals(game.getBlackPlayer()))) {
                         Error error = new Error("Player color not specified");
                         session.getRemote().sendString(new Gson().toJson(error));
                     } else {
@@ -101,7 +104,7 @@ public class WebSocketHandler {
         }
     }
 
-    public void joinObserver(JoinObserverCommand command, Session session) throws IOException {
+    private void joinObserver(JoinObserverCommand command, Session session) throws IOException {
 
         connections.add(command.getAuthString(), session);
 
@@ -117,6 +120,64 @@ public class WebSocketHandler {
                 session.getRemote().sendString(new Gson().toJson(error));
             }
         } catch (DataAccessException | DataErrorException | IOException e) {
+            String error = new Gson().toJson(new Error(e.getMessage()));
+            session.getRemote().sendString(error);
+        }
+    }
+    private void leave(LeaveGameCommand command, Session session) throws IOException {
+        connections.remove(command.getAuthString());
+        try {
+            if (authDAO.findAuth(command.getAuthString())) {
+                GameData game = gameDAO.getGame(command.getGameID());
+                if (game.getWhitePlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())) {
+                    game.setWhitePlayer(null);
+                    Notification notification = new Notification("Player left game");
+                    connections.broadcast(command.getAuthString(), notification);
+                } else if (game.getBlackPlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())) {
+                    game.setBlackPlayer(null);
+                    Notification notification = new Notification("Player left game");
+                    connections.broadcast(command.getAuthString(), notification);
+                }
+                else{
+                    Error error = new Error("Player not in game");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                }
+            } else {
+                Error error = new Error("Player not authorized to leave game");
+                session.getRemote().sendString(new Gson().toJson(error));
+            }
+        } catch (DataErrorException | DataAccessException | IOException e) {
+            String error = new Gson().toJson(new Error(e.getMessage()));
+            session.getRemote().sendString(error);
+        }
+    }
+
+    private void resign(ResignCommand command, Session session) throws IOException{
+        connections.add(command.getAuthString(), session);
+
+        try{
+            if(authDAO.findAuth(command.getAuthString())){
+                GameData data = gameDAO.getGame(command.getGameID());
+                if(data.getWhitePlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())){
+                    data.setWhitePlayer(null);
+                    Notification notification = new Notification("Player resigned");
+                    session.getRemote().sendString(new Gson().toJson(notification));
+                    connections.broadcast(command.getAuthString(), notification);
+                } else if(data.getBlackPlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())){
+                    data.setBlackPlayer(null);
+                    Notification notification = new Notification("Player resigned");
+                    session.getRemote().sendString(new Gson().toJson(notification));
+                    connections.broadcast(command.getAuthString(), notification);
+                } else{
+                    Error error = new Error("Player not in game");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                }
+            }else{
+                Error error = new Error("Player not authorized to resign");
+                session.getRemote().sendString(new Gson().toJson(error));
+
+            }
+        } catch (DataAccessException | DataErrorException  | IOException e) {
             String error = new Gson().toJson(new Error(e.getMessage()));
             session.getRemote().sendString(error);
         }
