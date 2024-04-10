@@ -55,23 +55,23 @@ public class PrintBoard {
         String spacing = "\u2001\u2005\u2006";
         String background = SET_BG_COLOR_LIGHT_GREY;
         String[] rowLabels = {" 1"+spacing, " 2"+spacing, " 3"+spacing, " 4"+spacing, " 5"+spacing, " 6"+spacing, " 7"+spacing, " 8"+spacing};
-        for (int i = 0; i < BOARD_SIZE_IN_SQUARES; i++) {
+        for (int j = 0; j < BOARD_SIZE_IN_SQUARES; j++) {
             out.print(SET_BG_COLOR_BLACK + EMPTY);
-            out.print(SET_BG_COLOR_LIGHT_GREY + rowLabels[i]);
-            for (int j = 0; j < BOARD_SIZE_IN_SQUARES; j++) {
+            out.print(SET_BG_COLOR_LIGHT_GREY + rowLabels[j]);
+            for (int i = 0; i < BOARD_SIZE_IN_SQUARES; i++) {
                 if ((i + j) % 2 == 0) {
                     out.print(SET_BG_COLOR_WHITE);
                 } else {
                     out.print(SET_BG_COLOR_BLACK);
                 }
                 out.print(SET_TEXT_COLOR_BLUE);
-                if (i >=6){
+                if (j >=6){
                     out.print(SET_TEXT_COLOR_RED);
                 }
-                out.print(board[i][j]);
+                out.print(board[j][i]);
             }
             out.print(SET_TEXT_COLOR_BLACK);
-            out.print(SET_BG_COLOR_LIGHT_GREY + rowLabels[i]);
+            out.print(SET_BG_COLOR_LIGHT_GREY + rowLabels[j]);
             out.print(SET_BG_COLOR_BLACK + EMPTY);
             out.print("\n");
         }
