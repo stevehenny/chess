@@ -55,13 +55,15 @@ public class GameDAOMem implements GameDAO{
         }
     }
     @Override
-    public void overrideGame(GameData game) {
+    public void overrideGame(GameData game) throws DataErrorException {
         for (GameData g : gameData) {
             if (g.getGameID() == game.getGameID()) {
-                g.setBlackPlayer(game.getBlackPlayer());
-                g.setWhitePlayer(game.getWhitePlayer());
+                gameData.remove(g);
+                gameData.add(game);
+                return;
             }
         }
+        throw new DataErrorException(500, "Game not found");
     }
 
 }
