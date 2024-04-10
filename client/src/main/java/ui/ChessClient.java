@@ -5,11 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.google.gson.Gson;
-import dataAccess.GameDAO;
-import dataAccess.GameDAOsql;
 import exception.ResponseException;
 import model.*;
-import server.Server;
+
 
 public class ChessClient {
 
