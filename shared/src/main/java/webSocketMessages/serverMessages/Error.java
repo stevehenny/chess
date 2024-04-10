@@ -6,7 +6,7 @@ public class Error extends ServerMessage{
 
     public Error(String errorMessage) {
         super(ServerMessageType.ERROR);
-        this.errorMessage = errorMessage + "Error";
+        this.errorMessage = errorMessage + " Error";
     }
 
     public String getMessage() {

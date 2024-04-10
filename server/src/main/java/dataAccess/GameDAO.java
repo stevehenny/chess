@@ -13,4 +13,6 @@ public interface GameDAO {
     public Collection<GameData> listGames() throws DataAccessException, DataErrorException;
 
     public void joinGame(GameData game) throws DataAccessException, DataErrorException;
+
+    public void overrideGame(GameData game) throws DataErrorException;
 }

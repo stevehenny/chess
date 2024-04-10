@@ -54,4 +54,14 @@ public class GameDAOMem implements GameDAO{
             }
         }
     }
+    @Override
+    public void overrideGame(GameData game) {
+        for (GameData g : gameData) {
+            if (g.getGameID() == game.getGameID()) {
+                g.setBlackPlayer(game.getBlackPlayer());
+                g.setWhitePlayer(game.getWhitePlayer());
+            }
+        }
+    }
+
 }

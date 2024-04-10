@@ -14,6 +14,8 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.Objects;
+
 @WebSocket
 public class WebSocketHandler {
     public final ConnectionManager connections = new ConnectionManager();
@@ -41,7 +43,7 @@ public class WebSocketHandler {
                 joinObserver(cmd2, session);
                 break;
             case MAKE_MOVE:
-//                makeMove(command, session);
+                makeMove(command, session);
                 break;
             case LEAVE:
                 LeaveGameCommand cmd3 = new Gson().fromJson(message, LeaveGameCommand.class);
@@ -52,10 +54,9 @@ public class WebSocketHandler {
                 resign(cmd4, session);
                 break;
             default:
-//                throw new ResponseException("Invalid command type");
+                throw new IOException("Invalid command type");
         }
     }
-
 
 
 
@@ -68,7 +69,7 @@ public class WebSocketHandler {
                     Error error = new Error("Player color is null");
                     session.getRemote().sendString(new Gson().toJson(error));
                 } else if ("WHITE".equals(command.getPlayerColor().toString())) {
-                    if ((game.getWhitePlayer() == null) || !(authDAO.readAuth(command.getAuthString()).getUsername().equals(game.getWhitePlayer()))) {
+                    if ((game.getWhitePlayer() == null) || !(Objects.equals(authDAO.readAuth(command.getAuthString()).getUsername(), game.getWhitePlayer()))) {
                         Error error = new Error("Player color not specified");
                         session.getRemote().sendString(new Gson().toJson(error));
                     } else {
@@ -80,7 +81,7 @@ public class WebSocketHandler {
                     }
 
                 } else {
-                    if ((game.getBlackPlayer() == null) || !(authDAO.readAuth(command.getAuthString()).getUsername().equals(game.getBlackPlayer()))) {
+                    if ((game.getBlackPlayer() == null) || !(Objects.equals(authDAO.readAuth(command.getAuthString()).getUsername(), game.getBlackPlayer()))) {
                         Error error = new Error("Player color not specified");
                         session.getRemote().sendString(new Gson().toJson(error));
                     } else {
@@ -129,18 +130,26 @@ public class WebSocketHandler {
         try {
             if (authDAO.findAuth(command.getAuthString())) {
                 GameData game = gameDAO.getGame(command.getGameID());
-                if (game.getWhitePlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())) {
+                if (Objects.equals(game.getWhitePlayer(), authDAO.readAuth(command.getAuthString()).getUsername())) {
                     game.setWhitePlayer(null);
-                    Notification notification = new Notification("Player left game");
+                    gameDAO.overrideGame(game);
+                    Notification notification = new Notification("White Player left game");
+                    session.getRemote().sendString(new Gson().toJson(notification));
                     connections.broadcast(command.getAuthString(), notification);
-                } else if (game.getBlackPlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())) {
+                    connections.remove(command.getAuthString());
+                } else if (Objects.equals(game.getBlackPlayer(), authDAO.readAuth(command.getAuthString()).getUsername())) {
                     game.setBlackPlayer(null);
-                    Notification notification = new Notification("Player left game");
+                    gameDAO.overrideGame(game);
+                    Notification notification = new Notification("Black Player left game");
+                    session.getRemote().sendString(new Gson().toJson(notification));
                     connections.broadcast(command.getAuthString(), notification);
+                    connections.remove(command.getAuthString());
                 }
                 else{
-                    Error error = new Error("Player not in game");
-                    session.getRemote().sendString(new Gson().toJson(error));
+                    Notification notification = new Notification("Player left game");
+                    session.getRemote().sendString(new Gson().toJson(notification));
+                    connections.broadcast(command.getAuthString(), notification);
+                    connections.remove(command.getAuthString());
                 }
             } else {
                 Error error = new Error("Player not authorized to leave game");
@@ -158,13 +167,17 @@ public class WebSocketHandler {
         try{
             if(authDAO.findAuth(command.getAuthString())){
                 GameData data = gameDAO.getGame(command.getGameID());
-                if(data.getWhitePlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())){
+                if(Objects.equals(data.getWhitePlayer(), authDAO.readAuth(command.getAuthString()).getUsername())){
                     data.setWhitePlayer(null);
+                    data.setBlackPlayer(null);
+                    gameDAO.overrideGame(data);
                     Notification notification = new Notification("Player resigned");
                     session.getRemote().sendString(new Gson().toJson(notification));
                     connections.broadcast(command.getAuthString(), notification);
-                } else if(data.getBlackPlayer().equals(authDAO.readAuth(command.getAuthString()).getUsername())){
+                } else if(Objects.equals(data.getBlackPlayer(), authDAO.readAuth(command.getAuthString()).getUsername())){
                     data.setBlackPlayer(null);
+                    data.setWhitePlayer(null);
+                    gameDAO.overrideGame(data);
                     Notification notification = new Notification("Player resigned");
                     session.getRemote().sendString(new Gson().toJson(notification));
                     connections.broadcast(command.getAuthString(), notification);
@@ -182,4 +195,9 @@ public class WebSocketHandler {
             session.getRemote().sendString(error);
         }
     }
+
+    private void makeMove(UserGameCommand command, Session session) {
+
+    }
+
 }

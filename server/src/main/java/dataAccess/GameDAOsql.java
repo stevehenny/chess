@@ -127,9 +127,9 @@ public class GameDAOsql implements GameDAO{
             throw new DataErrorException(500, "Error encountered while listing GameData: " + statement);
         }
     }
-
-    public void overrideGame(GameData game) throws DataErrorException{
-        var statement = "UPDATE Games Set game = ? WHERE gameID = ?";
+    @Override
+    public void overrideGame(GameData game) throws DataErrorException {
+        var stmt = "UPDATE Games SET gameName = ?, whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?";
         var gameID = game.getGameID();
         var gameName = game.getGameName();
         var whiteUsername = game.getWhitePlayer();
@@ -137,7 +137,31 @@ public class GameDAOsql implements GameDAO{
         ChessGame chessGame = game.getGame();
         Gson chess = new Gson();
         String gameData = chess.toJson(chessGame);
-        executeStatement(statement, gameID, gameName, whiteUsername, blackUsername, gameData);
+        try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(stmt)){
+            if(gameID >= 0) {
+                statement.setInt(5, gameID);
+            }
+            if(gameName != null) {
+                statement.setString(1, gameName);
+            }
+            if(whiteUsername != null) {
+                statement.setString(2, whiteUsername);
+            }
+            else statement.setNull(2, NULL);
+            if(blackUsername != null) {
+                statement.setString(3, blackUsername);
+            }
+            else statement.setNull(3, NULL);
+            if(gameData != null) {
+                statement.setString(4, gameData);
+            }
+            else statement.setNull(4, NULL);
+
+            statement.executeUpdate();
+    }
+        catch(Exception e){
+            throw new DataErrorException(500, "Error encountered while overriding GameData: " + e.getMessage());
+        }
     }
     @Override
     public void joinGame(GameData game) throws DataAccessException, DataErrorException {
