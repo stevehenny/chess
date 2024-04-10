@@ -1,6 +1,7 @@
 package server.WebSockets;
 
-import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataAccess.*;
 import model.GameData;
@@ -10,7 +11,6 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
@@ -43,7 +43,8 @@ public class WebSocketHandler {
                 joinObserver(cmd2, session);
                 break;
             case MAKE_MOVE:
-                makeMove(command, session);
+                MakeMoveCommand cmd5 = new Gson().fromJson(message, MakeMoveCommand.class);
+                makeMove(cmd5, session);
                 break;
             case LEAVE:
                 LeaveGameCommand cmd3 = new Gson().fromJson(message, LeaveGameCommand.class);
@@ -77,7 +78,7 @@ public class WebSocketHandler {
                         LoadGameMessage message = new LoadGameMessage(game.getGame());
                         session.getRemote().sendString(new Gson().toJson(message));
                         Notification notification = new Notification("Player joined game");
-                        connections.broadcast(command.getAuthString(), notification);
+                        connections.broadcast(command.getAuthString(), command.getGameID(), notification);
                     }
 
                 } else {
@@ -89,7 +90,7 @@ public class WebSocketHandler {
                         LoadGameMessage message = new LoadGameMessage(game.getGame());
                         session.getRemote().sendString(new Gson().toJson(message));
                         Notification notification = new Notification("Player joined game");
-                        connections.broadcast(command.getAuthString(), notification);
+                        connections.broadcast(command.getAuthString(), command.getGameID(), notification);
                     }
                 }
 
@@ -115,7 +116,7 @@ public class WebSocketHandler {
                 LoadGameMessage message = new LoadGameMessage(game.getGame());
                 session.getRemote().sendString(new Gson().toJson(message));
                 Notification notification = new Notification("Observer joined game");
-                connections.broadcast(command.getAuthString(), notification);
+                connections.broadcast(command.getAuthString(), command.getGameID(), notification);
             } else {
                 Error error = new Error("Observer not authorized to join game");
                 session.getRemote().sendString(new Gson().toJson(error));
@@ -135,20 +136,20 @@ public class WebSocketHandler {
                     gameDAO.overrideGame(game);
                     Notification notification = new Notification("White Player left game");
                     session.getRemote().sendString(new Gson().toJson(notification));
-                    connections.broadcast(command.getAuthString(), notification);
+                    connections.broadcast(command.getAuthString(), command.getGameID(), notification);
                     connections.remove(command.getAuthString());
                 } else if (Objects.equals(game.getBlackPlayer(), authDAO.readAuth(command.getAuthString()).getUsername())) {
                     game.setBlackPlayer(null);
                     gameDAO.overrideGame(game);
                     Notification notification = new Notification("Black Player left game");
                     session.getRemote().sendString(new Gson().toJson(notification));
-                    connections.broadcast(command.getAuthString(), notification);
+                    connections.broadcast(command.getAuthString(), command.getGameID(), notification);
                     connections.remove(command.getAuthString());
                 }
                 else{
                     Notification notification = new Notification("Player left game");
                     session.getRemote().sendString(new Gson().toJson(notification));
-                    connections.broadcast(command.getAuthString(), notification);
+                    connections.broadcast(command.getAuthString(), command.getGameID(), notification);
                     connections.remove(command.getAuthString());
                 }
             } else {
@@ -167,20 +168,27 @@ public class WebSocketHandler {
         try{
             if(authDAO.findAuth(command.getAuthString())){
                 GameData data = gameDAO.getGame(command.getGameID());
+                if(data.isGameOver()){
+                    Error error = new Error("Game is over");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                }
+                else
                 if(Objects.equals(data.getWhitePlayer(), authDAO.readAuth(command.getAuthString()).getUsername())){
                     data.setWhitePlayer(null);
                     data.setBlackPlayer(null);
+                    data.setGameOver(true);
                     gameDAO.overrideGame(data);
                     Notification notification = new Notification("Player resigned");
                     session.getRemote().sendString(new Gson().toJson(notification));
-                    connections.broadcast(command.getAuthString(), notification);
+                    connections.broadcast(command.getAuthString(), command.getGameID(), notification);
                 } else if(Objects.equals(data.getBlackPlayer(), authDAO.readAuth(command.getAuthString()).getUsername())){
                     data.setBlackPlayer(null);
                     data.setWhitePlayer(null);
+                    data.setGameOver(true);
                     gameDAO.overrideGame(data);
                     Notification notification = new Notification("Player resigned");
                     session.getRemote().sendString(new Gson().toJson(notification));
-                    connections.broadcast(command.getAuthString(), notification);
+                    connections.broadcast(command.getAuthString(), command.getGameID(), notification);
                 } else{
                     Error error = new Error("Player not in game");
                     session.getRemote().sendString(new Gson().toJson(error));
@@ -196,8 +204,47 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(UserGameCommand command, Session session) {
+    private void makeMove(MakeMoveCommand command, Session session) throws IOException{
+     connections.add(command.getAuthString(), session);
+     ChessMove move = command.getMove();
+     try{
+         if (authDAO.findAuth(command.getAuthString())){
+             GameData data = gameDAO.getGame(command.getGameId());
+             if(data.isGameOver()){
+                 Error error = new Error("Game is over");
+                    session.getRemote().sendString(new Gson().toJson(error));
+             }
+             else if (Objects.equals(data.getGame().getTeamTurn().toString(), "WHITE") && !(Objects.equals(data.getWhitePlayer(), authDAO.readAuth(command.getAuthString()).getUsername()))){
+                 session.getRemote().sendString(new Gson().toJson(new Error("Not your turn")));
+             }
+             else if (Objects.equals(data.getGame().getTeamTurn().toString(), "BLACK") && !(Objects.equals(data.getBlackPlayer(), authDAO.readAuth(command.getAuthString()).getUsername()))){
+                 session.getRemote().sendString(new Gson().toJson(new Error("Not your turn")));
+             }
+             else{
+                 if((Objects.equals(data.getWhitePlayer(), authDAO.readAuth(command.getAuthString()).getUsername())) || (Objects.equals(data.getBlackPlayer(), authDAO.readAuth(command.getAuthString()).getUsername()))){
+                     data.getGame().makeMove(move);
+                        gameDAO.overrideGame(data);
+                        LoadGameMessage message = new LoadGameMessage(data.getGame());
+                        connections.broadcast("", command.getGameId(), message);
+                        if(data.isGameOver()){
+                            Notification notification = new Notification("Game Over");
+                            connections.broadcast("", command.getGameId(), notification);
+                        }
+                        else{
+                            Notification notification = new Notification("Move made");
+                            connections.broadcast(command.getAuthString(), command.getGameId(), notification);
+                        }
+                 } else{
+                        Error error = new Error("Player not in game");
+                        session.getRemote().sendString(new Gson().toJson(error));
+                 }
+             }
+         }
+     } catch (DataAccessException | DataErrorException  | IOException  | InvalidMoveException e){
+         Error error = new Error(e.getMessage());
+         session.getRemote().sendString(new Gson().toJson(error));
 
+     }
     }
 
 }

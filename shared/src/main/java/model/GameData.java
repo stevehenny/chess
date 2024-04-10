@@ -8,6 +8,8 @@ public class GameData {
     private String whiteUsername;
     private String blackUsername;
 
+    private boolean isGameOver = false;
+
     public GameData(int gameId, String gameName, ChessGame game, String whitePlayer, String blackPlayer) {
         this.gameID = gameId;
         this.gameName = gameName;
@@ -54,6 +56,14 @@ public class GameData {
 
     public void setBlackPlayer(String blackPlayer) {
         this.blackUsername = blackPlayer;
+    }
+
+    public void setGameOver(boolean isGameOver) {
+        this.isGameOver = isGameOver;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
     }
 
     @Override
